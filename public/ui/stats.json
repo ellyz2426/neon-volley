@@ -291,7 +291,7 @@
             "sourceTag": "span",
             "type": "custom",
             "children": [
-              "0/20"
+              "0/40"
             ],
             "properties": {
               "id": "stat-achcount",
@@ -313,19 +313,85 @@
             "sourceTag": "span",
             "type": "custom",
             "children": [
+              "Career Points"
+            ],
+            "properties": {
+              "class": "stat-label"
+            },
+            "dataUid": "uid-31"
+          },
+          {
+            "sourceTag": "span",
+            "type": "custom",
+            "children": [
+              "0"
+            ],
+            "properties": {
+              "id": "stat-career",
+              "class": "stat-value"
+            },
+            "dataUid": "uid-32"
+          }
+        ],
+        "properties": {
+          "class": "stat-row"
+        },
+        "dataUid": "uid-30"
+      },
+      {
+        "type": "container",
+        "sourceTag": "div",
+        "children": [
+          {
+            "sourceTag": "span",
+            "type": "custom",
+            "children": [
+              "Modes Played"
+            ],
+            "properties": {
+              "class": "stat-label"
+            },
+            "dataUid": "uid-34"
+          },
+          {
+            "sourceTag": "span",
+            "type": "custom",
+            "children": [
+              "0/7"
+            ],
+            "properties": {
+              "id": "stat-modes",
+              "class": "stat-value"
+            },
+            "dataUid": "uid-35"
+          }
+        ],
+        "properties": {
+          "class": "stat-row"
+        },
+        "dataUid": "uid-33"
+      },
+      {
+        "type": "container",
+        "sourceTag": "div",
+        "children": [
+          {
+            "sourceTag": "span",
+            "type": "custom",
+            "children": [
               "BACK"
             ],
             "properties": {
               "class": "btn-text"
             },
-            "dataUid": "uid-31"
+            "dataUid": "uid-37"
           }
         ],
         "properties": {
           "id": "btn-back",
           "class": "btn"
         },
-        "dataUid": "uid-30"
+        "dataUid": "uid-36"
       }
     ],
     "properties": {
@@ -495,7 +561,7 @@
         "column": 0
       },
       "end": {
-        "line": 73,
+        "line": 75,
         "column": 6
       }
     },
@@ -786,16 +852,76 @@
       },
       "end": {
         "line": 72,
-        "column": 73
+        "column": 125
       }
     },
     "uid-31": {
       "start": {
         "line": 72,
-        "column": 33
+        "column": 24
       },
       "end": {
         "line": 72,
+        "column": 69
+      }
+    },
+    "uid-32": {
+      "start": {
+        "line": 72,
+        "column": 69
+      },
+      "end": {
+        "line": 72,
+        "column": 119
+      }
+    },
+    "uid-33": {
+      "start": {
+        "line": 73,
+        "column": 2
+      },
+      "end": {
+        "line": 73,
+        "column": 125
+      }
+    },
+    "uid-34": {
+      "start": {
+        "line": 73,
+        "column": 24
+      },
+      "end": {
+        "line": 73,
+        "column": 68
+      }
+    },
+    "uid-35": {
+      "start": {
+        "line": 73,
+        "column": 68
+      },
+      "end": {
+        "line": 73,
+        "column": 119
+      }
+    },
+    "uid-36": {
+      "start": {
+        "line": 74,
+        "column": 2
+      },
+      "end": {
+        "line": 74,
+        "column": 73
+      }
+    },
+    "uid-37": {
+      "start": {
+        "line": 74,
+        "column": 33
+      },
+      "end": {
+        "line": 74,
         "column": 67
       }
     }

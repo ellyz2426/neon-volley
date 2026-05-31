@@ -31,10 +31,15 @@
     font-size: 1;
     color: #666688;
   }
+  .wind {
+    font-size: 1.1;
+    color: #88ffaa;
+  }
 </style>
 <div class="hud">
   <span id="score-display" class="score">0 - 0</span>
   <span id="set-display" class="info">Set 1</span>
   <span id="combo-display" class="combo"></span>
+  <span id="wind-display" class="wind"></span>
   <span id="time-display" class="time"></span>
 </div>

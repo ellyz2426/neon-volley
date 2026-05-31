@@ -49,11 +49,15 @@
   <span class="text">WASD / Arrows - Move on court</span>
   <span class="text">Space (hold) - Charge serve</span>
   <span class="text">Space (tap) - Hit ball</span>
+  <span class="text">Q - Jump (aerial spikes)</span>
+  <span class="text">E - Dive save (extended reach)</span>
   <span class="text">Escape - Pause</span>
   <span class="section">VR Controls</span>
   <span class="text">Left Thumbstick - Move on court</span>
   <span class="text">Right Trigger (hold) - Charge serve</span>
   <span class="text">Right Trigger (tap) - Hit ball</span>
+  <span class="text">A Button - Jump</span>
+  <span class="text">Right Grip - Dive save</span>
   <span class="text">B Button - Pause</span>
   <span class="section">Game Rules</span>
   <span class="text">Rally point scoring to 21 (win by 2)</span>

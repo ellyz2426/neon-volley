@@ -34,7 +34,7 @@ import {
   RingGeometry,
 } from "@iwsdk/core";
 
-import { GameState, CourtTheme, THEMES, ACHIEVEMENTS, GameMode, Difficulty, AchievementDef, BallSkin, BALL_SKINS, TournamentState, TOURNAMENT_OPPONENTS } from "./types";
+import { GameState, CourtTheme, THEMES, ACHIEVEMENTS, GameMode, Difficulty, AchievementDef, BallSkin, BALL_SKINS, TournamentState, TOURNAMENT_OPPONENTS, WindState, WindDirection, WIND_CONFIGS } from "./types";
 import { AudioManager } from "./audio";
 
 // ============================================================
@@ -155,6 +155,40 @@ class GameStateManager {
   totalCareerPoints = 0;
   modesPlayed: Set<string> = new Set();
 
+  // Wind system
+  wind: WindState = {
+    direction: 'none',
+    strength: 0,
+    gustTimer: 0,
+    gustStrength: 0,
+    displayArrow: '—',
+  };
+  windEnabled = true;
+
+  // Jump system
+  playerY = 0; // vertical offset from ground
+  playerVelY = 0;
+  isJumping = false;
+  jumpCooldown = 0;
+  aerialSpikeThisMatch = false;
+
+  // Dive/lunge system
+  isDiving = false;
+  diveTimer = 0;
+  diveDirX = 0;
+  diveDirZ = 0;
+  diveReachBonus = 0;
+  diveSaveThisMatch = false;
+
+  // Net tape tracking
+  tapePointThisMatch = false;
+
+  // Per-mode stats
+  skinsUsed: Set<string> = new Set();
+  themesUsed: Set<string> = new Set();
+  matchBlocksThisMatch = 0;
+  matchAcesThisSet = 0;
+
   constructor() {
     this.loadPersistence();
   }
@@ -174,6 +208,8 @@ class GameStateManager {
         this.totalCareerPoints = d.totalCareerPoints || 0;
         this.modesPlayed = new Set(d.modesPlayed || []);
         this.ballSkin = d.ballSkin || 'default';
+        this.skinsUsed = new Set(d.skinsUsed || []);
+        this.themesUsed = new Set(d.themesUsed || []);
       }
     } catch {}
   }
@@ -191,6 +227,8 @@ class GameStateManager {
         totalCareerPoints: this.totalCareerPoints,
         modesPlayed: Array.from(this.modesPlayed),
         ballSkin: this.ballSkin,
+        skinsUsed: Array.from(this.skinsUsed),
+        themesUsed: Array.from(this.themesUsed),
       }));
     } catch {}
   }
@@ -207,6 +245,9 @@ class GameStateManager {
     this.aiHitCooldown = 0;
     this.aiState = 'idle';
     this.aiReactionTimer = 0;
+    this.isDiving = false;
+    this.diveTimer = 0;
+    this.diveReachBonus = 0;
 
     // Position ball for serve
     if (this.servingPlayer) {
@@ -240,7 +281,31 @@ class GameStateManager {
     this.spikeAttempts = 0;
     this.spikeHits = 0;
     this.practiceTimer = 0;
+    this.aerialSpikeThisMatch = false;
+    this.diveSaveThisMatch = false;
+    this.tapePointThisMatch = false;
+    this.matchBlocksThisMatch = 0;
+    this.matchAcesThisSet = 0;
+    this.skinsUsed.add(this.ballSkin);
+    this.themesUsed.add(this.theme);
+    // Randomize wind for this match
+    if (this.windEnabled) {
+      this.randomizeWind();
+    } else {
+      this.wind.direction = 'none';
+      this.wind.strength = 0;
+    }
     this.resetRound();
+  }
+
+  randomizeWind() {
+    const dirs: WindDirection[] = ['none', 'left', 'right', 'headwind', 'tailwind'];
+    this.wind.direction = dirs[Math.floor(Math.random() * dirs.length)];
+    this.wind.strength = this.wind.direction === 'none' ? 0 : 0.3 + Math.random() * 0.7;
+    this.wind.gustTimer = 3 + Math.random() * 5;
+    this.wind.gustStrength = 0;
+    const cfg = WIND_CONFIGS[this.wind.direction];
+    this.wind.displayArrow = cfg.arrow;
   }
 
   getTargetScore(): number {
@@ -376,6 +441,9 @@ async function main() {
     if (gsm.state === 'playing' && !gsm.paused) {
       gsm.matchTime += dt;
       updateInput(dt);
+      updateJump(dt);
+      updateDive(dt);
+      updateWind(dt);
       updateBallPhysics(dt);
       updateAI(dt);
       updatePlayerHands(dt);
@@ -986,6 +1054,28 @@ function updateInput(dt: number) {
     }
   }
 
+  // Jump (KeyQ or A_Button)
+  if (!gsm.isJumping && gsm.jumpCooldown <= 0) {
+    const shouldJump = world.input.keyboard.getKeyDown('KeyQ') ||
+      leftGP?.getButtonDown?.(InputComponent.A_Button);
+    if (shouldJump) {
+      gsm.isJumping = true;
+      gsm.playerVelY = 5.5; // jump impulse
+      gsm.jumpCooldown = 0.8;
+      audio.playClick(); // light sound for jump
+    }
+  }
+  gsm.jumpCooldown = Math.max(0, gsm.jumpCooldown - dt);
+
+  // Dive/lunge (KeyE or Squeeze)
+  if (!gsm.isDiving && gsm.ballActive) {
+    const shouldDive = world.input.keyboard.getKeyDown('KeyE') ||
+      rightGP?.getButtonDown?.(InputComponent.Squeeze);
+    if (shouldDive) {
+      startDive();
+    }
+  }
+
   // Pause (Escape or B)
   if (world.input.keyboard.getKeyDown('Escape') || rightGP?.getButtonDown?.(InputComponent.B_Button)) {
     togglePause();
@@ -1016,15 +1106,25 @@ function performServe() {
 }
 
 function attemptHit() {
-  const distToBall = new Vector3(gsm.playerX, 1.3, gsm.playerZ).distanceTo(gsm.ballPos);
-  if (distToBall > 2.0) return; // Too far
+  const playerHitY = 1.3 + gsm.playerY; // Account for jump height
+  const reachRange = 2.0 + gsm.diveReachBonus; // Extended reach during dive
+  const distToBall = new Vector3(gsm.playerX, playerHitY, gsm.playerZ).distanceTo(gsm.ballPos);
+  if (distToBall > reachRange) return; // Too far
 
   gsm.swingCooldown = 0.4;
+
+  // Track dive save
+  if (gsm.isDiving && distToBall > 1.8) {
+    gsm.diveSaveThisMatch = true;
+    showToast('DIVE SAVE!', '#44ffaa');
+    audio.playCrowdCheer(0.5);
+  }
 
   const ballHeight = gsm.ballPos.y;
   const isAboveNet = ballHeight > NET_HEIGHT - 0.3;
   const isNearNet = gsm.playerZ > -3;
   const ballComingFromOpponent = gsm.ballVel.z < -1 && !gsm.lastTouchPlayer;
+  const isAerial = gsm.isJumping && gsm.playerY > 0.3;
 
   let hitPower: number;
   let hitAngleY: number;
@@ -1032,28 +1132,34 @@ function attemptHit() {
 
   if (isAboveNet && isNearNet && ballComingFromOpponent && ballHeight > 1.8) {
     // BLOCK — ball coming from opponent at net height
-    hitPower = gsm.ballVel.length() * 0.8; // Reflect with reduced speed
+    hitPower = gsm.ballVel.length() * 0.8;
     hitAngleY = 0.2;
     hitType = 'block';
     gsm.blocks++;
     gsm.totalBlocks++;
-    audio.playSpike(); // Reuse spike sound with lower volume
+    gsm.matchBlocksThisMatch++;
+    audio.playSpike();
     audio.playImpact();
     spawnParticles(gsm.ballPos.clone(), '#ffffff', 12, 3);
     showToast('BLOCK!', '#ffffff');
     triggerScreenShake(0.15);
     triggerBallSquash(gsm.ballVel.clone().normalize());
-  } else if (isAboveNet && isNearNet && ballHeight > 2.0) {
-    // SPIKE
-    hitPower = SPIKE_POWER;
-    hitAngleY = 0.15; // Downward
+  } else if ((isAboveNet && isNearNet && ballHeight > 2.0) || (isAerial && ballHeight > 1.8)) {
+    // SPIKE — including aerial spikes from jumps
+    hitPower = SPIKE_POWER * (isAerial ? 1.2 : 1.0); // aerial bonus
+    hitAngleY = 0.15;
     hitType = 'spike';
     gsm.spikes++;
     gsm.totalSpikes++;
+    if (isAerial) {
+      gsm.aerialSpikeThisMatch = true;
+      showToast('AERIAL SPIKE!', '#ff6600');
+    } else {
+      showToast('SPIKE!', '#ff4400');
+    }
     audio.playSpike();
     audio.playImpact();
     spawnParticles(gsm.ballPos.clone(), '#ff4400', 15, 4);
-    showToast('SPIKE!', '#ff4400');
     triggerScreenShake(0.25);
     triggerBallSquash(new Vector3(0, -1, 1).normalize());
   } else if (ballHeight < 1.2) {
@@ -1097,6 +1203,87 @@ function attemptHit() {
 }
 
 // ============================================================
+// WIND SYSTEM
+// ============================================================
+function updateWind(dt: number) {
+  if (gsm.wind.direction === 'none') return;
+
+  // Gust cycling
+  gsm.wind.gustTimer -= dt;
+  if (gsm.wind.gustTimer <= 0) {
+    gsm.wind.gustTimer = 2 + Math.random() * 4;
+    gsm.wind.gustStrength = Math.random() * 0.5; // Extra gust
+  }
+
+  // Fade gust
+  gsm.wind.gustStrength *= 0.95;
+}
+
+function getWindForce(): Vector3 {
+  if (gsm.wind.direction === 'none') return new Vector3(0, 0, 0);
+  const cfg = WIND_CONFIGS[gsm.wind.direction];
+  const totalStrength = (gsm.wind.strength + gsm.wind.gustStrength) * 3.0; // Wind force multiplier
+  return new Vector3(cfg.x * totalStrength, 0, cfg.z * totalStrength);
+}
+
+// ============================================================
+// JUMP SYSTEM
+// ============================================================
+function updateJump(dt: number) {
+  if (gsm.isJumping) {
+    gsm.playerVelY += GRAVITY * dt;
+    gsm.playerY += gsm.playerVelY * dt;
+    if (gsm.playerY <= 0) {
+      gsm.playerY = 0;
+      gsm.playerVelY = 0;
+      gsm.isJumping = false;
+      // Landing particles
+      const theme = THEMES[gsm.theme];
+      spawnParticles(new Vector3(gsm.playerX, 0.05, gsm.playerZ), theme.accent, 4, 1);
+    }
+  }
+}
+
+// ============================================================
+// DIVE/LUNGE SYSTEM
+// ============================================================
+function startDive() {
+  gsm.isDiving = true;
+  gsm.diveTimer = 0.5; // 500ms dive window
+
+  // Dive toward the ball
+  const dx = gsm.ballPos.x - gsm.playerX;
+  const dz = gsm.ballPos.z - gsm.playerZ;
+  const dist = Math.sqrt(dx * dx + dz * dz);
+  if (dist > 0.1) {
+    gsm.diveDirX = dx / dist;
+    gsm.diveDirZ = dz / dist;
+  } else {
+    gsm.diveDirX = 0;
+    gsm.diveDirZ = 1;
+  }
+  gsm.diveReachBonus = 1.2; // Extra reach during dive
+}
+
+function updateDive(dt: number) {
+  if (!gsm.isDiving) return;
+
+  gsm.diveTimer -= dt;
+
+  // Move player in dive direction
+  const diveSpeed = 8;
+  gsm.playerX = Math.max(-COURT_WIDTH / 2 + 0.3, Math.min(COURT_WIDTH / 2 - 0.3,
+    gsm.playerX + gsm.diveDirX * diveSpeed * dt));
+  gsm.playerZ = Math.max(-COURT_LENGTH / 2, Math.min(-1,
+    gsm.playerZ + gsm.diveDirZ * diveSpeed * dt));
+
+  if (gsm.diveTimer <= 0) {
+    gsm.isDiving = false;
+    gsm.diveReachBonus = 0;
+  }
+}
+
+// ============================================================
 // BALL PHYSICS
 // ============================================================
 function updateBallPhysics(dt: number) {
@@ -1108,6 +1295,11 @@ function updateBallPhysics(dt: number) {
   for (let s = 0; s < substeps; s++) {
     // Gravity
     gsm.ballVel.y += GRAVITY * subDt;
+
+    // Wind force
+    const windForce = getWindForce();
+    gsm.ballVel.x += windForce.x * subDt;
+    gsm.ballVel.z += windForce.z * subDt;
 
     // Air resistance
     gsm.ballVel.multiplyScalar(1 - 0.01 * subDt);
@@ -1128,6 +1320,11 @@ function updateBallPhysics(dt: number) {
     // Floor bounce
     if (gsm.ballPos.y <= BALL_RADIUS) {
       gsm.ballPos.y = BALL_RADIUS;
+      // Sand splash effect on landing
+      const theme = THEMES[gsm.theme];
+      spawnParticles(gsm.ballPos.clone(), '#ddc89e', 12, 2.5); // sand-colored
+      spawnParticles(gsm.ballPos.clone(), theme.accent, 4, 1.5); // accent accent
+      triggerScreenShake(0.06);
       // Ball hit the floor — point scored
       scorePoint();
       return;
@@ -1170,8 +1367,18 @@ function updateBallPhysics(dt: number) {
         gsm.ballPos.z = 0.15;
         audio.playNetHit();
       }
-      // Ball might dribble over the net
-      if (gsm.ballPos.y >= NET_HEIGHT - 0.1) {
+      // Net tape — ball barely clears the top
+      if (gsm.ballPos.y >= NET_HEIGHT - 0.15 && gsm.ballPos.y <= NET_HEIGHT + 0.05) {
+        // Tape point — ball rolls over the net
+        gsm.ballVel.y += 1.5;
+        gsm.ballVel.z *= 0.5; // Slow down going over
+        gsm.tapePointThisMatch = true;
+        showToast('NET TAPE!', '#ffff00');
+        // Flash the net band
+        spawnParticles(new Vector3(gsm.ballPos.x, NET_HEIGHT, 0), '#ffff00', 8, 2);
+        audio.playNetHit();
+        triggerScreenShake(0.08);
+      } else if (gsm.ballPos.y >= NET_HEIGHT - 0.1) {
         // Close enough to top — let it pass sometimes
         gsm.ballVel.y += 1;
       }
@@ -1290,6 +1497,7 @@ function scorePoint() {
     if (gsm.rallyLength === 0 && gsm.servingPlayer) {
       gsm.aces++;
       gsm.totalAces++;
+      gsm.matchAcesThisSet++;
       showToast('ACE!', '#ffd700');
       audio.playAce();
       audio.playCrowdCheer(0.8);
@@ -1750,10 +1958,19 @@ function triggerOpponentHitAnimation() {
 }
 
 function updatePlayerHands(dt: number) {
-  // Position hands near player
-  const handBaseY = 1.0;
+  // Position hands near player (account for jump height)
+  const handBaseY = 1.0 + gsm.playerY;
   playerHandMeshL.position.set(gsm.playerX - 0.25, handBaseY, gsm.playerZ + 0.2);
   playerHandMeshR.position.set(gsm.playerX + 0.25, handBaseY, gsm.playerZ + 0.2);
+
+  // Diving visual — lower hands toward ground and spread
+  if (gsm.isDiving) {
+    const divePhase = gsm.diveTimer / 0.5; // 1 at start, 0 at end
+    playerHandMeshL.position.y = handBaseY - (1 - divePhase) * 0.4;
+    playerHandMeshR.position.y = handBaseY - (1 - divePhase) * 0.4;
+    playerHandMeshL.position.x -= 0.15;
+    playerHandMeshR.position.x += 0.15;
+  }
 
   // Pulse when ball is near
   if (gsm.ballActive) {
@@ -1950,6 +2167,7 @@ function wireUIEvents() {
   wireBtn('settings', 'btn-skin-next', () => { cycleBallSkin(1); });
   wireBtn('settings', 'btn-ball-prev', () => { cycleBallSkin(-1); });
   wireBtn('settings', 'btn-ball-next', () => { cycleBallSkin(1); });
+  wireBtn('settings', 'btn-wind-toggle', () => { gsm.windEnabled = !gsm.windEnabled; updateSettingsDisplay(); audio.playClick(); });
 
   // Help
   wireBtn('help', 'btn-back', () => { hideUI('help'); showUI('title'); audio.playClick(); });
@@ -2048,6 +2266,14 @@ function updateHUD() {
   const mins = Math.floor(gsm.matchTime / 60);
   const secs = Math.floor(gsm.matchTime % 60);
   setText(doc, 'time-display', `${mins}:${String(secs).padStart(2, '0')}`);
+  // Wind indicator
+  if (gsm.wind.direction !== 'none') {
+    const windCfg = WIND_CONFIGS[gsm.wind.direction];
+    const str = gsm.wind.strength > 0.6 ? '!' : '';
+    setText(doc, 'wind-display', `${windCfg.arrow} ${windCfg.label}${str}`);
+  } else {
+    setText(doc, 'wind-display', '');
+  }
 }
 
 function updateServeBar() {
@@ -2091,10 +2317,11 @@ function updateGameOverPanel(won: boolean) {
   setText(doc, 'result-text', won ? 'VICTORY!' : 'DEFEAT');
   setText(doc, 'final-score', `${gsm.playerScore} - ${gsm.opponentScore}`);
   setText(doc, 'sets-score', `Sets: ${gsm.playerSets} - ${gsm.opponentSets}`);
+  const windLabel = gsm.wind.direction !== 'none' ? ` | Wind: ${WIND_CONFIGS[gsm.wind.direction].label}` : '';
   setText(doc, 'stats-text',
     `Aces: ${gsm.aces} | Spikes: ${gsm.spikes} | Blocks: ${gsm.blocks}\n` +
     `Longest Rally: ${gsm.longestRally} | Max Combo: ${gsm.maxCombo}\n` +
-    `Time: ${Math.floor(gsm.matchTime / 60)}:${String(Math.floor(gsm.matchTime % 60)).padStart(2, '0')}`
+    `Time: ${Math.floor(gsm.matchTime / 60)}:${String(Math.floor(gsm.matchTime % 60)).padStart(2, '0')}${windLabel}`
   );
 }
 
@@ -2167,6 +2394,17 @@ function checkAchievements() {
     ['speed-demon', () => gsm.state === 'gameover' && gsm.matchTime < 120 && gsm.playerSets > gsm.opponentSets],
     ['rally-warrior', () => gsm.longestRally >= 15 && gsm.playerScore > gsm.opponentScore],
     ['century', () => gsm.totalCareerPoints >= 100],
+    // Round 4 achievements
+    ['wind-master', () => gsm.wind.strength > 0.5 && gsm.gamesWon > 0 && gsm.playerSets > gsm.opponentSets],
+    ['sky-high', () => gsm.aerialSpikeThisMatch],
+    ['dive-save', () => gsm.diveSaveThisMatch],
+    ['tape-point', () => gsm.tapePointThisMatch],
+    ['triple-ace', () => gsm.matchAcesThisSet >= 3],
+    ['iron-defense', () => gsm.matchBlocksThisMatch >= 3],
+    ['five-hundred', () => gsm.totalCareerPoints >= 500],
+    ['spike-100', () => gsm.totalSpikes >= 100],
+    ['all-skins', () => gsm.skinsUsed.size >= ballSkinKeys.length],
+    ['all-themes', () => gsm.themesUsed.size >= themeKeys.length],
   ];
 
   for (const [id, check] of checks) {
@@ -2199,6 +2437,8 @@ function updateStatsPanel() {
   setText(doc, 'stat-blocks', `${gsm.totalBlocks}`);
   setText(doc, 'stat-rally', `${gsm.bestRally}`);
   setText(doc, 'stat-achcount', `${gsm.achievements.size}/${ACHIEVEMENTS.length}`);
+  setText(doc, 'stat-career', `${gsm.totalCareerPoints}`);
+  setText(doc, 'stat-modes', `${gsm.modesPlayed.size}/7`);
 }
 
 // ============================================================
@@ -2300,6 +2540,7 @@ function updateSettingsDisplay() {
   setText(doc, 'theme-val', gsm.theme.toUpperCase());
   setText(doc, 'skin-val', BALL_SKINS[gsm.ballSkin].name.toUpperCase());
   setText(doc, 'ball-val', BALL_SKINS[gsm.ballSkin].name.toUpperCase());
+  setText(doc, 'wind-val', gsm.windEnabled ? 'ON' : 'OFF');
 }
 
 // ============================================================

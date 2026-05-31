@@ -1,5 +1,23 @@
 export type GameState = 'title' | 'modeselect' | 'difficulty' | 'countdown' | 'playing' | 'paused' | 'gameover' | 'serving_ai' | 'leaderboard' | 'achievements' | 'settings' | 'help' | 'stats' | 'tournament';
 
+export type WindDirection = 'none' | 'left' | 'right' | 'headwind' | 'tailwind';
+
+export interface WindState {
+  direction: WindDirection;
+  strength: number; // 0-1
+  gustTimer: number;
+  gustStrength: number;
+  displayArrow: string;
+}
+
+export const WIND_CONFIGS: Record<WindDirection, { x: number; z: number; arrow: string; label: string }> = {
+  none: { x: 0, z: 0, arrow: '—', label: 'CALM' },
+  left: { x: -1, z: 0, arrow: '←', label: 'LEFT' },
+  right: { x: 1, z: 0, arrow: '→', label: 'RIGHT' },
+  headwind: { x: 0, z: -1, arrow: '↑', label: 'HEAD' },
+  tailwind: { x: 0, z: 1, arrow: '↓', label: 'TAIL' },
+};
+
 export type GameMode = 'match' | 'quick' | 'rally' | 'serve' | 'spike' | 'daily' | 'tournament';
 
 export type Difficulty = 'easy' | 'medium' | 'hard';
@@ -178,4 +196,15 @@ export const ACHIEVEMENTS: AchievementDef[] = [
   { id: 'speed-demon', name: 'Speed Demon', desc: 'Win a match in under 2 minutes' },
   { id: 'rally-warrior', name: 'Rally Warrior', desc: 'Win a point after 15+ hit rally' },
   { id: 'century', name: 'Century', desc: 'Score 100 total career points' },
+  // Round 4 achievements
+  { id: 'wind-master', name: 'Wind Master', desc: 'Win a match with strong wind active' },
+  { id: 'sky-high', name: 'Sky High', desc: 'Spike from a jump (aerial spike)' },
+  { id: 'dive-save', name: 'Dive Save', desc: 'Save a ball with a dive lunge' },
+  { id: 'tape-point', name: 'Net Tape', desc: 'Score a net tape point' },
+  { id: 'triple-ace', name: 'Triple Ace', desc: '3 aces in a single set' },
+  { id: 'iron-defense', name: 'Iron Defense', desc: 'Block 3 shots in a single match' },
+  { id: 'five-hundred', name: 'Half Millennium', desc: 'Score 500 total career points' },
+  { id: 'spike-100', name: 'Spike Centurion', desc: 'Land 100 spikes total' },
+  { id: 'all-skins', name: 'Fashionista', desc: 'Try every ball skin' },
+  { id: 'all-themes', name: 'Interior Designer', desc: 'Play on every court theme' },
 ];

@@ -90,5 +90,9 @@
     <span id="ball-val" class="value">NEON</span>
     <div id="btn-ball-next" class="btn-ctrl"><span class="ctrl-text">&gt;</span></div>
   </div>
+  <div class="row">
+    <span class="label">Wind:</span>
+    <div id="btn-wind-toggle" class="btn-ctrl"><span id="wind-val" class="ctrl-text">ON</span></div>
+  </div>
   <div id="btn-back" class="back-btn"><span class="back-text">BACK</span></div>
 </div>

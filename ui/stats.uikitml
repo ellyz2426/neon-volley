@@ -69,6 +69,8 @@
   <div class="stat-row"><span class="stat-label">Total Blocks</span><span id="stat-blocks" class="stat-value">0</span></div>
   <div class="stat-row"><span class="stat-label">Best Rally</span><span id="stat-rally" class="stat-value">0</span></div>
   <div class="divider"></div>
-  <div class="stat-row"><span class="stat-label">Achievements</span><span id="stat-achcount" class="stat-value">0/20</span></div>
+  <div class="stat-row"><span class="stat-label">Achievements</span><span id="stat-achcount" class="stat-value">0/40</span></div>
+  <div class="stat-row"><span class="stat-label">Career Points</span><span id="stat-career" class="stat-value">0</span></div>
+  <div class="stat-row"><span class="stat-label">Modes Played</span><span id="stat-modes" class="stat-value">0/7</span></div>
   <div id="btn-back" class="btn"><span class="btn-text">BACK</span></div>
 </div>

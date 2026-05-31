@@ -42,10 +42,20 @@
         "type": "custom",
         "children": [],
         "properties": {
+          "id": "wind-display",
+          "class": "wind"
+        },
+        "dataUid": "uid-5"
+      },
+      {
+        "sourceTag": "span",
+        "type": "custom",
+        "children": [],
+        "properties": {
           "id": "time-display",
           "class": "time"
         },
-        "dataUid": "uid-5"
+        "dataUid": "uid-6"
       }
     ],
     "properties": {
@@ -94,6 +104,12 @@
       "content": {
         "fontSize": "1",
         "color": "#666688"
+      }
+    },
+    "wind": {
+      "content": {
+        "fontSize": "1.1",
+        "color": "#88ffaa"
       }
     }
   },
@@ -148,53 +164,73 @@
         "column": 7
       }
     },
+    "wind": {
+      "start": {
+        "line": 33,
+        "column": 2
+      },
+      "end": {
+        "line": 33,
+        "column": 7
+      }
+    },
     "uid-1": {
       "start": {
-        "line": 34,
+        "line": 38,
         "column": 0
       },
       "end": {
-        "line": 39,
+        "line": 44,
         "column": 6
       }
     },
     "uid-2": {
       "start": {
-        "line": 35,
+        "line": 39,
         "column": 2
       },
       "end": {
-        "line": 35,
+        "line": 39,
         "column": 53
       }
     },
     "uid-3": {
       "start": {
-        "line": 36,
+        "line": 40,
         "column": 2
       },
       "end": {
-        "line": 36,
+        "line": 40,
         "column": 50
       }
     },
     "uid-4": {
       "start": {
-        "line": 37,
+        "line": 41,
         "column": 2
       },
       "end": {
-        "line": 37,
+        "line": 41,
         "column": 48
       }
     },
     "uid-5": {
       "start": {
-        "line": 38,
+        "line": 42,
         "column": 2
       },
       "end": {
-        "line": 38,
+        "line": 42,
+        "column": 46
+      }
+    },
+    "uid-6": {
+      "start": {
+        "line": 43,
+        "column": 2
+      },
+      "end": {
+        "line": 43,
         "column": 46
       }
     }
