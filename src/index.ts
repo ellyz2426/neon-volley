@@ -271,17 +271,17 @@ async function main() {
 
   world = await World.create(container, {
     xr: { offer: "once" as any },
-    input: { canvasPointerEvents: true },
+    ...({ input: { canvasPointerEvents: true } } as any),
     features: {
       grabbing: false,
-      locomotion: { browserControls: true },
+      locomotion: { browserControls: true } as any,
       physics: false,
       spatialUI: true,
     },
     render: {
       near: 0.01,
       far: 200,
-      camera: { position: [0, 1.7, -6], lookAt: [0, 1.5, 0] },
+      ...({ camera: { position: [0, 1.7, -6], lookAt: [0, 1.5, 0] } } as any),
     },
   });
 
