@@ -1,0 +1,81 @@
+<style>
+  .panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 3;
+    padding-bottom: 3;
+    padding-left: 4;
+    padding-right: 4;
+    background-color: rgba(0, 10, 30, 0.92);
+    border-color: #00ffff;
+    border-width: 0.15;
+    border-radius: 1.5;
+    gap: 2;
+  }
+  .heading {
+    font-size: 3;
+    color: #00ffff;
+    font-weight: bold;
+  }
+  .btn {
+    padding-top: 1;
+    padding-bottom: 1;
+    padding-left: 3;
+    padding-right: 3;
+    background-color: rgba(0, 180, 255, 0.2);
+    border-color: #00ffff;
+    border-width: 0.1;
+    border-radius: 0.8;
+    cursor: pointer;
+  }
+  .btn-text {
+    font-size: 2;
+    color: #00ffff;
+    font-weight: bold;
+  }
+  .btn-green {
+    padding-top: 1;
+    padding-bottom: 1;
+    padding-left: 3;
+    padding-right: 3;
+    background-color: rgba(0, 200, 100, 0.2);
+    border-color: #00cc66;
+    border-width: 0.1;
+    border-radius: 0.8;
+    cursor: pointer;
+  }
+  .btn-red {
+    padding-top: 1;
+    padding-bottom: 1;
+    padding-left: 3;
+    padding-right: 3;
+    background-color: rgba(255, 60, 60, 0.2);
+    border-color: #ff4444;
+    border-width: 0.1;
+    border-radius: 0.8;
+    cursor: pointer;
+  }
+  .back-btn {
+    padding-top: 0.6;
+    padding-bottom: 0.6;
+    padding-left: 2;
+    padding-right: 2;
+    background-color: rgba(100, 100, 100, 0.2);
+    border-color: #666666;
+    border-width: 0.08;
+    border-radius: 0.6;
+    cursor: pointer;
+  }
+  .back-text {
+    font-size: 1.4;
+    color: #888888;
+  }
+</style>
+<div class="panel">
+  <span class="heading">DIFFICULTY</span>
+  <div id="btn-easy" class="btn-green"><span class="btn-text">EASY</span></div>
+  <div id="btn-medium" class="btn"><span class="btn-text">MEDIUM</span></div>
+  <div id="btn-hard" class="btn-red"><span class="btn-text">HARD</span></div>
+  <div id="btn-back" class="back-btn"><span class="back-text">BACK</span></div>
+</div>

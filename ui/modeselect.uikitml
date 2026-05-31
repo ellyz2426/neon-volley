@@ -1,0 +1,100 @@
+<style>
+  .panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 3;
+    padding-bottom: 3;
+    padding-left: 4;
+    padding-right: 4;
+    background-color: rgba(0, 10, 30, 0.92);
+    border-color: #00ffff;
+    border-width: 0.15;
+    border-radius: 1.5;
+    gap: 1.5;
+  }
+  .heading {
+    font-size: 3;
+    color: #00ffff;
+    font-weight: bold;
+  }
+  .btn {
+    padding-top: 1;
+    padding-bottom: 1;
+    padding-left: 3;
+    padding-right: 3;
+    background-color: rgba(0, 180, 255, 0.2);
+    border-color: #00ffff;
+    border-width: 0.1;
+    border-radius: 0.8;
+    cursor: pointer;
+  }
+  .btn-text {
+    font-size: 1.8;
+    color: #00ffff;
+    font-weight: bold;
+  }
+  .btn-desc {
+    font-size: 1.2;
+    color: #88aacc;
+  }
+  .btn-accent {
+    padding-top: 1;
+    padding-bottom: 1;
+    padding-left: 3;
+    padding-right: 3;
+    background-color: rgba(255, 170, 0, 0.2);
+    border-color: #ffaa00;
+    border-width: 0.1;
+    border-radius: 0.8;
+    cursor: pointer;
+  }
+  .btn-accent-text {
+    font-size: 1.8;
+    color: #ffaa00;
+    font-weight: bold;
+  }
+  .back-btn {
+    padding-top: 0.6;
+    padding-bottom: 0.6;
+    padding-left: 2;
+    padding-right: 2;
+    background-color: rgba(100, 100, 100, 0.2);
+    border-color: #666666;
+    border-width: 0.08;
+    border-radius: 0.6;
+    cursor: pointer;
+  }
+  .back-text {
+    font-size: 1.4;
+    color: #888888;
+  }
+</style>
+<div class="panel">
+  <span class="heading">SELECT MODE</span>
+  <div id="btn-match" class="btn">
+    <span class="btn-text">MATCH</span>
+    <span class="btn-desc">Best of 3 sets to 21</span>
+  </div>
+  <div id="btn-quick" class="btn">
+    <span class="btn-text">QUICK MATCH</span>
+    <span class="btn-desc">First to 11 points</span>
+  </div>
+  <div id="btn-rally" class="btn">
+    <span class="btn-text">RALLY</span>
+    <span class="btn-desc">Keep the rally alive</span>
+  </div>
+  <div id="btn-serve" class="btn">
+    <span class="btn-text">SERVE PRACTICE</span>
+    <span class="btn-desc">Perfect your serve</span>
+  </div>
+  <div id="btn-spike" class="btn">
+    <span class="btn-text">SPIKE DRILL</span>
+    <span class="btn-desc">Spike training</span>
+  </div>
+  <div id="btn-daily" class="btn-accent">
+    <span class="btn-accent-text">DAILY CHALLENGE</span>
+    <span class="btn-desc">New challenge every day</span>
+  </div>
+  <div id="btn-back" class="back-btn"><span class="back-text">BACK</span></div>
+</div>

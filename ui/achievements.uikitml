@@ -1,0 +1,64 @@
+<style>
+  .panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 2;
+    padding-bottom: 2;
+    padding-left: 3;
+    padding-right: 3;
+    background-color: rgba(0, 10, 30, 0.92);
+    border-color: #ffd700;
+    border-width: 0.15;
+    border-radius: 1.5;
+    gap: 0.6;
+  }
+  .heading {
+    font-size: 3;
+    color: #ffd700;
+    font-weight: bold;
+  }
+  .entry {
+    font-size: 1.1;
+    color: #ccccdd;
+  }
+  .back-btn {
+    padding-top: 0.6;
+    padding-bottom: 0.6;
+    padding-left: 2;
+    padding-right: 2;
+    background-color: rgba(100, 100, 100, 0.2);
+    border-color: #666666;
+    border-width: 0.08;
+    border-radius: 0.6;
+    cursor: pointer;
+  }
+  .back-text {
+    font-size: 1.4;
+    color: #888888;
+  }
+</style>
+<div class="panel">
+  <span class="heading">ACHIEVEMENTS</span>
+  <span id="ach-0" class="entry">[ ] First Blood</span>
+  <span id="ach-1" class="entry">[ ] Victor</span>
+  <span id="ach-2" class="entry">[ ] Ace!</span>
+  <span id="ach-3" class="entry">[ ] Spike Master</span>
+  <span id="ach-4" class="entry">[ ] Hot Streak</span>
+  <span id="ach-5" class="entry">[ ] On Fire</span>
+  <span id="ach-6" class="entry">[ ] Unstoppable</span>
+  <span id="ach-7" class="entry">[ ] Long Rally</span>
+  <span id="ach-8" class="entry">[ ] Marathon Rally</span>
+  <span id="ach-9" class="entry">[ ] Epic Rally</span>
+  <span id="ach-10" class="entry">[ ] Shutout</span>
+  <span id="ach-11" class="entry">[ ] Ace Machine</span>
+  <span id="ach-12" class="entry">[ ] Spike Legend</span>
+  <span id="ach-13" class="entry">[ ] Veteran</span>
+  <span id="ach-14" class="entry">[ ] Champion</span>
+  <span id="ach-15" class="entry">[ ] Hard Mode</span>
+  <span id="ach-16" class="entry">[ ] Perfect Set</span>
+  <span id="ach-17" class="entry">[ ] Comeback King</span>
+  <span id="ach-18" class="entry">[ ] Marathon Match</span>
+  <span id="ach-19" class="entry">[ ] Daily Grind</span>
+  <div id="btn-back" class="back-btn"><span class="back-text">BACK</span></div>
+</div>

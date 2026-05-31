@@ -1,0 +1,74 @@
+<style>
+  .panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 2;
+    padding-bottom: 2;
+    padding-left: 3;
+    padding-right: 3;
+    background-color: rgba(0, 10, 30, 0.92);
+    border-color: #00ffff;
+    border-width: 0.15;
+    border-radius: 1.5;
+    gap: 1;
+  }
+  .heading {
+    font-size: 3;
+    color: #00ffff;
+    font-weight: bold;
+  }
+  .section {
+    font-size: 1.8;
+    color: #ffaa00;
+    font-weight: bold;
+  }
+  .text {
+    font-size: 1.2;
+    color: #aabbcc;
+  }
+  .back-btn {
+    padding-top: 0.6;
+    padding-bottom: 0.6;
+    padding-left: 2;
+    padding-right: 2;
+    background-color: rgba(100, 100, 100, 0.2);
+    border-color: #666666;
+    border-width: 0.08;
+    border-radius: 0.6;
+    cursor: pointer;
+  }
+  .back-text {
+    font-size: 1.4;
+    color: #888888;
+  }
+</style>
+<div class="panel">
+  <span class="heading">HOW TO PLAY</span>
+  <span class="section">Browser Controls</span>
+  <span class="text">WASD / Arrows - Move on court</span>
+  <span class="text">Space (hold) - Charge serve</span>
+  <span class="text">Space (tap) - Hit ball</span>
+  <span class="text">Escape - Pause</span>
+  <span class="section">VR Controls</span>
+  <span class="text">Left Thumbstick - Move on court</span>
+  <span class="text">Right Trigger (hold) - Charge serve</span>
+  <span class="text">Right Trigger (tap) - Hit ball</span>
+  <span class="text">B Button - Pause</span>
+  <span class="section">Game Rules</span>
+  <span class="text">Rally point scoring to 21 (win by 2)</span>
+  <span class="text">Best of 3 sets in Match mode</span>
+  <span class="text">Serve alternates each point</span>
+  <span class="section">Hit Types</span>
+  <span class="text">High ball near net = SPIKE (powerful)</span>
+  <span class="text">Low ball = BUMP (high arc return)</span>
+  <span class="text">Medium height = SET (controlled)</span>
+  <span class="section">Modes</span>
+  <span class="text">Match - Full game (best of 3 sets)</span>
+  <span class="text">Quick - Single set to 11</span>
+  <span class="text">Rally - Keep the ball alive</span>
+  <span class="text">Serve - Practice serving</span>
+  <span class="text">Spike - Spike training drills</span>
+  <span class="text">Daily - Seeded daily challenge</span>
+  <div id="btn-back" class="back-btn"><span class="back-text">BACK</span></div>
+</div>

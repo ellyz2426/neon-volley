@@ -1,0 +1,35 @@
+<style>
+  .hud {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 1;
+    padding-bottom: 1;
+    padding-left: 2;
+    padding-right: 2;
+    background-color: rgba(0, 10, 30, 0.75);
+    border-color: #00ffff;
+    border-width: 0.08;
+    border-radius: 0.8;
+    gap: 0.3;
+  }
+  .score {
+    font-size: 3;
+    color: #00ffff;
+    font-weight: bold;
+  }
+  .info {
+    font-size: 1.2;
+    color: #88ccff;
+  }
+  .combo {
+    font-size: 1.5;
+    color: #ffaa00;
+    font-weight: bold;
+  }
+</style>
+<div class="hud">
+  <span id="score-display" class="score">0 - 0</span>
+  <span id="set-display" class="info">Set 1</span>
+  <span id="combo-display" class="combo"></span>
+</div>

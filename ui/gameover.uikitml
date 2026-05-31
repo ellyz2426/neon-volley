@@ -1,0 +1,73 @@
+<style>
+  .panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 3;
+    padding-bottom: 3;
+    padding-left: 4;
+    padding-right: 4;
+    background-color: rgba(0, 10, 30, 0.92);
+    border-color: #00ffff;
+    border-width: 0.15;
+    border-radius: 1.5;
+    gap: 1.5;
+  }
+  .result {
+    font-size: 4;
+    color: #00ffff;
+    font-weight: bold;
+  }
+  .score {
+    font-size: 3;
+    color: #ffffff;
+    font-weight: bold;
+  }
+  .sets {
+    font-size: 2;
+    color: #88ccff;
+  }
+  .stats {
+    font-size: 1.3;
+    color: #aaaacc;
+  }
+  .btn {
+    padding-top: 1;
+    padding-bottom: 1;
+    padding-left: 3;
+    padding-right: 3;
+    background-color: rgba(0, 180, 255, 0.2);
+    border-color: #00ffff;
+    border-width: 0.1;
+    border-radius: 0.8;
+    cursor: pointer;
+  }
+  .btn-text {
+    font-size: 2;
+    color: #00ffff;
+    font-weight: bold;
+  }
+  .back-btn {
+    padding-top: 0.8;
+    padding-bottom: 0.8;
+    padding-left: 2;
+    padding-right: 2;
+    background-color: rgba(100, 100, 100, 0.2);
+    border-color: #666666;
+    border-width: 0.08;
+    border-radius: 0.6;
+    cursor: pointer;
+  }
+  .back-text {
+    font-size: 1.5;
+    color: #888888;
+  }
+</style>
+<div class="panel">
+  <span id="result-text" class="result">VICTORY!</span>
+  <span id="final-score" class="score">21 - 15</span>
+  <span id="sets-score" class="sets">Sets: 2 - 0</span>
+  <span id="stats-text" class="stats">Aces: 3 | Spikes: 12 | Rally: 15</span>
+  <div id="btn-rematch" class="btn"><span class="btn-text">REMATCH</span></div>
+  <div id="btn-title" class="back-btn"><span class="back-text">TITLE SCREEN</span></div>
+</div>

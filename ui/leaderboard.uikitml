@@ -1,0 +1,54 @@
+<style>
+  .panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 3;
+    padding-bottom: 3;
+    padding-left: 4;
+    padding-right: 4;
+    background-color: rgba(0, 10, 30, 0.92);
+    border-color: #00ffff;
+    border-width: 0.15;
+    border-radius: 1.5;
+    gap: 1;
+  }
+  .heading {
+    font-size: 3;
+    color: #00ffff;
+    font-weight: bold;
+  }
+  .entry {
+    font-size: 1.2;
+    color: #88ccff;
+  }
+  .back-btn {
+    padding-top: 0.6;
+    padding-bottom: 0.6;
+    padding-left: 2;
+    padding-right: 2;
+    background-color: rgba(100, 100, 100, 0.2);
+    border-color: #666666;
+    border-width: 0.08;
+    border-radius: 0.6;
+    cursor: pointer;
+  }
+  .back-text {
+    font-size: 1.4;
+    color: #888888;
+  }
+</style>
+<div class="panel">
+  <span class="heading">LEADERBOARD</span>
+  <span id="lb-0" class="entry">1. ---</span>
+  <span id="lb-1" class="entry">2. ---</span>
+  <span id="lb-2" class="entry">3. ---</span>
+  <span id="lb-3" class="entry">4. ---</span>
+  <span id="lb-4" class="entry">5. ---</span>
+  <span id="lb-5" class="entry">6. ---</span>
+  <span id="lb-6" class="entry">7. ---</span>
+  <span id="lb-7" class="entry">8. ---</span>
+  <span id="lb-8" class="entry">9. ---</span>
+  <span id="lb-9" class="entry">10. ---</span>
+  <div id="btn-back" class="back-btn"><span class="back-text">BACK</span></div>
+</div>

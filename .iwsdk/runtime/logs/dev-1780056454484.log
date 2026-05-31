@@ -1,0 +1,442 @@
+
+> neon-marble@1.0.0 dev:runtime
+> vite
+
+🔧 IWSDK Dev Configuration:
+  - Device: metaQuest3
+  - SEM: disabled
+  - AI: enabled (agent mode)
+  - Activation: localhost
+  - UA exception: enabled
+  - Inject on build: false
+[compile-uikitml] Plugin initialized with options: {
+  sourceDir: 'ui',
+  outputDir: 'public/ui',
+  watch: true,
+  verbose: true,
+  include: /\.uikitml$/
+}
+[compile-uikitml] Vite command: serve
+[compile-uikitml] Vite mode: development
+🔌 IWSDK-MCP: WebSocket endpoint registered at /__iwer_mcp
+🔍 UIKitML watcher monitoring: /home/hatch/workspace/neon-marble/ui
+🚀 Generating initial UIKitML files for dev server...
+[compile-uikitml] Found 16 .uikitml files to process
+[compile-uikitml] Reading file: /home/hatch/workspace/neon-marble/ui/achievements.uikitml
+[compile-uikitml] File content length: 7147 characters
+[compile-uikitml] Real parse result for achievements.uikitml:
+[compile-uikitml] Element type: container
+[compile-uikitml] Classes found: 7
+[compile-uikitml] Ranges found: 146
+[compile-uikitml] ✅ Compiled: achievements.uikitml -> achievements.json
+[compile-uikitml] Reading file: /home/hatch/workspace/neon-marble/ui/countdown.uikitml
+[compile-uikitml] File content length: 463 characters
+[compile-uikitml] Real parse result for countdown.uikitml:
+[compile-uikitml] Element type: container
+[compile-uikitml] Classes found: 2
+[compile-uikitml] Ranges found: 4
+[compile-uikitml] ✅ Compiled: countdown.uikitml -> countdown.json
+[compile-uikitml] Reading file: /home/hatch/workspace/neon-marble/ui/gameover.uikitml
+[compile-uikitml] File content length: 1362 characters
+[compile-uikitml] Real parse result for gameover.uikitml:
+[compile-uikitml] Element type: container
+[compile-uikitml] Classes found: 6
+[compile-uikitml] Ranges found: 15
+[compile-uikitml] ✅ Compiled: gameover.uikitml -> gameover.json
+[compile-uikitml] Reading file: /home/hatch/workspace/neon-marble/ui/help.uikitml
+[compile-uikitml] File content length: 3093 characters
+[compile-uikitml] Real parse result for help.uikitml:
+[compile-uikitml] Element type: container
+[compile-uikitml] Classes found: 6
+[compile-uikitml] Ranges found: 43
+[compile-uikitml] ✅ Compiled: help.uikitml -> help.json
+[compile-uikitml] Reading file: /home/hatch/workspace/neon-marble/ui/hud.uikitml
+[compile-uikitml] File content length: 2027 characters
+[compile-uikitml] Real parse result for hud.uikitml:
+[compile-uikitml] Element type: container
+[compile-uikitml] Classes found: 9
+[compile-uikitml] Ranges found: 33
+[compile-uikitml] ✅ Compiled: hud.uikitml -> hud.json
+[compile-uikitml] Reading file: /home/hatch/workspace/neon-marble/ui/leaderboard.uikitml
+[compile-uikitml] File content length: 3619 characters
+[compile-uikitml] Real parse result for leaderboard.uikitml:
+[compile-uikitml] Element type: container
+[compile-uikitml] Classes found: 8
+[compile-uikitml] Ranges found: 67
+[compile-uikitml] ✅ Compiled: leaderboard.uikitml -> leaderboard.json
+[compile-uikitml] Reading file: /home/hatch/workspace/neon-marble/ui/levelcomplete.uikitml
+[compile-uikitml] File content length: 2418 characters
+[compile-uikitml] Real parse result for levelcomplete.uikitml:
+[compile-uikitml] Element type: container
+[compile-uikitml] Classes found: 11
+[compile-uikitml] Ranges found: 27
+[compile-uikitml] ✅ Compiled: levelcomplete.uikitml -> levelcomplete.json
+[compile-uikitml] Reading file: /home/hatch/workspace/neon-marble/ui/levelselect.uikitml
+[compile-uikitml] File content length: 9673 characters
+[compile-uikitml] Real parse result for levelselect.uikitml:
+[compile-uikitml] Element type: container
+[compile-uikitml] Classes found: 18
+[compile-uikitml] Ranges found: 140
+[compile-uikitml] ✅ Compiled: levelselect.uikitml -> levelselect.json
+[compile-uikitml] Reading file: /home/hatch/workspace/neon-marble/ui/modeselect.uikitml
+[compile-uikitml] File content length: 2938 characters
+[compile-uikitml] Real parse result for modeselect.uikitml:
+[compile-uikitml] Element type: container
+[compile-uikitml] Classes found: 11
+[compile-uikitml] Ranges found: 30
+[compile-uikitml] ✅ Compiled: modeselect.uikitml -> modeselect.json
+[compile-uikitml] Reading file: /home/hatch/workspace/neon-marble/ui/pause.uikitml
+[compile-uikitml] File content length: 1385 characters
+[compile-uikitml] Real parse result for pause.uikitml:
+[compile-uikitml] Element type: container
+[compile-uikitml] Classes found: 6
+[compile-uikitml] Ranges found: 12
+[compile-uikitml] ✅ Compiled: pause.uikitml -> pause.json
+[compile-uikitml] Reading file: /home/hatch/workspace/neon-marble/ui/settings.uikitml
+[compile-uikitml] File content length: 2935 characters
+[compile-uikitml] Real parse result for settings.uikitml:
+[compile-uikitml] Element type: container
+[compile-uikitml] Classes found: 10
+[compile-uikitml] Ranges found: 42
+[compile-uikitml] ✅ Compiled: settings.uikitml -> settings.json
+[compile-uikitml] Reading file: /home/hatch/workspace/neon-marble/ui/skins.uikitml
+[compile-uikitml] File content length: 6096 characters
+[compile-uikitml] Real parse result for skins.uikitml:
+[compile-uikitml] Element type: custom
+[compile-uikitml] Classes found: 0
+[compile-uikitml] Ranges found: 65
+[compile-uikitml] ✅ Compiled: skins.uikitml -> skins.json
+[compile-uikitml] Reading file: /home/hatch/workspace/neon-marble/ui/speedrun.uikitml
+[compile-uikitml] File content length: 4806 characters
+[compile-uikitml] Real parse result for speedrun.uikitml:
+[compile-uikitml] Element type: container
+[compile-uikitml] Classes found: 16
+[compile-uikitml] Ranges found: 78
+[compile-uikitml] ✅ Compiled: speedrun.uikitml -> speedrun.json
+[compile-uikitml] Reading file: /home/hatch/workspace/neon-marble/ui/stats.uikitml
+[compile-uikitml] File content length: 3615 characters
+[compile-uikitml] Real parse result for stats.uikitml:
+[compile-uikitml] Element type: custom
+[compile-uikitml] Classes found: 0
+[compile-uikitml] Ranges found: 54
+[compile-uikitml] ✅ Compiled: stats.uikitml -> stats.json
+[compile-uikitml] Reading file: /home/hatch/workspace/neon-marble/ui/title.uikitml
+[compile-uikitml] File content length: 2444 characters
+[compile-uikitml] Real parse result for title.uikitml:
+[compile-uikitml] Element type: container
+[compile-uikitml] Classes found: 8
+[compile-uikitml] Ranges found: 30
+[compile-uikitml] ✅ Compiled: title.uikitml -> title.json
+[compile-uikitml] Reading file: /home/hatch/workspace/neon-marble/ui/toast.uikitml
+[compile-uikitml] File content length: 465 characters
+[compile-uikitml] Real parse result for toast.uikitml:
+[compile-uikitml] Element type: container
+[compile-uikitml] Classes found: 2
+[compile-uikitml] Ranges found: 4
+[compile-uikitml] ✅ Compiled: toast.uikitml -> toast.json
+👁️  UIKitML file watcher started - monitoring for changes...
+🚀 IWSDK Dev: Starting injection bundle generation...
+🔄 Loading pre-built IWSDK injection bundle...
+👁️  UIKitML file watcher ready
+✅ IWSDK injection bundle loaded and configured (1116.7KB)
+✅ IWSDK Dev: Injection bundle ready
+
+  VITE v7.3.3  ready in 1506 ms
+
+  ➜  Local:   https://localhost:8081/
+  ➜  Network: https://198.19.0.2:8081/
+[RAG-MCP] Server not found, skipping warmup
+💉 IWSDK Dev: Injecting runtime script into HTML
+[browser:debug] [vite] connecting...
+[browser:log] [IWSDK Dev] Configuration: {device: metaQuest3, activation: localhost, verbose: true, sem: null, ai: Object}
+[browser:log] [IWSDK Dev] 🎯 Activating IWER runtime...
+[browser:log] [IWSDK Dev] 📱 Using device configuration: metaQuest3
+[browser:log] [IWSDK Dev] 🔌 Initializing MCP client...
+[browser:log] [IWSDK-MCP] Connecting to: wss://localhost:8081/__iwer_mcp
+[browser:log] [IWSDK Dev] ✅ MCP client initialized
+[browser:log] [IWSDK Dev] ✅ Runtime activated successfully!
+[browser:debug] [vite] connected.
+[IWSDK-MCP] WebSocket upgrade request received
+[IWSDK-MCP] Client connected
+[IWSDK-MCP] Message received: {"type":"iwsdk_browser_hello","tabId":"tab-mpqvnmsc-nljpi5","tabGeneration":1}
+[browser:log] [IWSDK-MCP] Connected
+[browser:warning] THREE.WARNING: Multiple instances of Three.js being imported.
+[browser:log]                                                  
+▄▄▄▄▄▄  ▄▄      ▄▄   ▄▄▄▄    ▄▄▄▄▄     ▄▄   ▄▄▄ 
+▀▀██▀▀  ██      ██ ▄█▀▀▀▀█   ██▀▀▀██   ██  ██▀  
+  ██    ▀█▄ ██ ▄█▀ ██▄       ██    ██  ██▄██    
+  ██     ██ ██ ██   ▀████▄   ██    ██  █████    
+  ██     ███▀▀███       ▀██  ██    ██  ██  ██▄  
+▄▄██▄▄   ███  ███  █▄▄▄▄▄█▀  ██▄▄▄██   ██   ██▄ 
+▀▀▀▀▀▀   ▀▀▀  ▀▀▀   ▀▀▀▀▀    ▀▀▀▀▀     ▀▀    ▀▀                                                
+===============================================
+Immersive Web SDK v0.3.1
+Three.js r181
+EliCS v3.4.2
+[browser:warning] The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio
+[browser:warning] The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio
+[browser:warning] The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio
+[browser:warning] The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio
+[browser:warning] The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio
+[browser:warning] The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio
+[browser:warning] The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio
+[browser:warning] The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio
+[browser:warning] The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio
+[browser:warning] [.WebGL-0xca400128400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels
+[browser:warning] [.WebGL-0xca400128400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels
+[browser:warning] [.WebGL-0xca400128400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels
+[browser] [PanelUISystem] Error loading panel for entity 17: Error: Invalid Yoga point: 0.5 1
+    at convertYogaPoint (https://localhost:8081/node_modules/.vite/deps/chunk-CAPBIKLO.js?v=7a96876b:834:9)
+    at convertPoint (https://localhost:8081/node_modules/.vite/deps/chunk-CAPBIKLO.js?v=7a96876b:3211:10)
+    at Object.paddingBottom (https://localhost:8081/node_modules/.vite/deps/chunk-CAPBIKLO.js?v=7a96876b:3412:24)
+    at E.<anonymous> (https://localhost:8081/node_modules/.vite/deps/chunk-CAPBIKLO.js?v=7a96876b:3480:22)
+    at E.c (https://localhost:8081/node_modules/.vite/deps/chunk-H7J63S3N.js?v=7a96876b:348:19)
+    at j (https://localhost:8081/node_modules/.vite/deps/chunk-H7J63S3N.js?v=7a96876b:382:8)
+    at abortableEffect (https://localhost:8081/node_modules/.vite/deps/chunk-CAPBIKLO.js?v=7a96876b:13883:23)
+    at https://localhost:8081/node_modules/.vite/deps/chunk-CAPBIKLO.js?v=7a96876b:3479:9
+    at PropertiesImplementation2.subscribePropertyKeys (https://localhost:8081/node_modules/.vite/deps/chunk-CAPBIKLO.js?v=7a96876b:3910:7)
+    at E.x (https://localhost:8081/node_modules/.vite/deps/chunk-CAPBIKLO.js?v=7a96876b:3475:48)
+🖥️  IWSDK: Headless browser launched
+[browser:warning] [.WebGL-0xca400128400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)
+[browser:warning] Missing glyph info for character "—"
+[browser:warning] Missing glyph info for character "—"
+[browser:warning] Missing glyph info for character "—"
+[browser:warning] Missing glyph info for character "—"
+[browser:warning] Missing glyph info for character "—"
+[browser:warning] Missing glyph info for character "—"
+[browser:warning] Missing glyph info for character "—"
+[browser:warning] Missing glyph info for character "—"
+[browser:warning] Missing glyph info for character "—"
+[browser:warning] Missing glyph info for character "—"
+[browser:warning] Missing glyph info for character "—"
+[browser:warning] Missing glyph info for character "—"
+[browser:warning] Missing glyph info for character "—"
+[browser:warning] Missing glyph info for character "—"
+[browser:warning] Missing glyph info for character "—"
+[browser:warning] Missing glyph info for character "—"
+[browser:warning] Missing glyph info for character "—"
+[browser:warning] Missing glyph info for character "—"
+[browser:warning] Missing glyph info for character "—"
+[browser:warning] Missing glyph info for character "—"
+[browser:warning] Missing glyph info for character "—"
+[browser:warning] Missing glyph info for character "—"
+[browser:warning] Missing glyph info for character "—"
+[browser:warning] Missing glyph info for character "—"
+[browser:warning] Missing glyph info for character "—"
+[browser:warning] Missing glyph info for character "—"
+[browser:warning] Missing glyph info for character "—"
+[browser:warning] Missing glyph info for character "☆"
+[browser:warning] Missing glyph info for character "☆"
+[browser:warning] Missing glyph info for character "☆"
+[browser:warning] Missing glyph info for character "☆"
+[browser:warning] Missing glyph info for character "☆"
+[browser:warning] Missing glyph info for character "☆"
+[browser:warning] Missing glyph info for character "☆"
+[browser:warning] Missing glyph info for character "☆"
+[browser:warning] Missing glyph info for character "☆"
+[browser:warning] Missing glyph info for character "☆"
+[browser:warning] Missing glyph info for character "☆"
+[browser:warning] Missing glyph info for character "☆"
+[browser:warning] Missing glyph info for character "★"
+[browser:warning] Missing glyph info for character "★"
+[browser:warning] Missing glyph info for character "★"
+[browser:warning] Missing glyph info for character "★"
+[browser:warning] Missing glyph info for character "★"
+[browser:warning] Missing glyph info for character "★"
+[browser:warning] Missing glyph info for character "★"
+[browser:warning] Missing glyph info for character "★"
+[browser:warning] Missing glyph info for character "★"
+[browser:warning] Missing glyph info for character "★"
+[browser:warning] Missing glyph info for character "★"
+[browser:warning] Missing glyph info for character "★"
+[browser:warning] Missing glyph info for character "★"
+[browser:warning] Missing glyph info for character "★"
+[browser:warning] Missing glyph info for character "★"
+[browser:warning] Missing glyph info for character "★"
+[browser:warning] Missing glyph info for character "★"
+[browser:warning] Missing glyph info for character "★"
+[browser:warning] Missing glyph info for character "★"
+[browser:warning] Missing glyph info for character "★"
+[browser:warning] Missing glyph info for character "★"
+[browser:warning] Missing glyph info for character "★"
+[browser:warning] Missing glyph info for character "★"
+[browser:warning] Missing glyph info for character "★"
+[browser:warning] Missing glyph info for character "★"
+[browser:warning] Missing glyph info for character "★"
+[browser:warning] Missing glyph info for character "★"
+[browser:warning] Missing glyph info for character "★"
+[browser:warning] Missing glyph info for character "★"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "●"
+[browser:warning] Missing glyph info for character "●"
+[browser:warning] Missing glyph info for character "●"
+[browser:warning] Missing glyph info for character "●"
+[browser:warning] Missing glyph info for character "—"
+[browser:warning] Missing glyph info for character "—"
+[browser:warning] Missing glyph info for character "—"
+[browser:warning] Missing glyph info for character "—"
+[browser:warning] Missing glyph info for character "—"
+[browser:warning] Missing glyph info for character "—"
+[browser:warning] Missing glyph info for character "—"
+[browser:warning] Missing glyph info for character "—"
+[browser:warning] Missing glyph info for character "—"
+[browser:warning] Missing glyph info for character "—"
+[browser:warning] Missing glyph info for character "—"
+[browser:warning] Missing glyph info for character "—"
+[browser:warning] Missing glyph info for character "—"
+[browser:warning] Missing glyph info for character "—"
+[browser:warning] Missing glyph info for character "—"
+[browser:warning] Missing glyph info for character "—"
+[browser:warning] Missing glyph info for character "—"
+[browser:warning] Missing glyph info for character "—"
+[browser:warning] Missing glyph info for character "☆"
+[browser:warning] Missing glyph info for character "☆"
+[browser:warning] Missing glyph info for character "☆"
+[browser:warning] Missing glyph info for character "☆"
+[browser:warning] Missing glyph info for character "☆"
+[browser:warning] Missing glyph info for character "☆"
+[browser:warning] Missing glyph info for character "☆"
+[browser:warning] Missing glyph info for character "☆"
+[browser:warning] Missing glyph info for character "☆"
+[browser:warning] Missing glyph info for character "★"
+[browser:warning] Missing glyph info for character "★"
+[browser:warning] Missing glyph info for character "★"
+[browser:warning] Missing glyph info for character "★"
+[browser:warning] Missing glyph info for character "★"
+[browser:warning] Missing glyph info for character "★"
+[browser:warning] Missing glyph info for character "★"
+[browser:warning] Missing glyph info for character "★"
+[browser:warning] Missing glyph info for character "★"
+[browser:warning] Missing glyph info for character "★"
+[browser:warning] Missing glyph info for character "★"
+[browser:warning] Missing glyph info for character "★"
+[browser:warning] Missing glyph info for character "★"
+[browser:warning] Missing glyph info for character "★"
+[browser:warning] Missing glyph info for character "★"
+[browser:warning] Missing glyph info for character "★"
+[browser:warning] Missing glyph info for character "★"
+[browser:warning] Missing glyph info for character "★"
+[browser:warning] Missing glyph info for character "●"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "○"
+[browser:warning] Missing glyph info for character "●"
+[browser:warning] Missing glyph info for character "●"
+[IWSDK-MCP] WebSocket upgrade request received
+[IWSDK-MCP] Client connected
+[IWSDK-MCP] Message received: {"id":"1780056482982-3800a8e1b882d","method":"screenshot","params":{}}
+[IWSDK-MCP] Client disconnected
+[IWSDK-MCP] WebSocket upgrade request received
+[IWSDK-MCP] Client connected
+[IWSDK-MCP] Message received: {"id":"1780056489505-6aedfdf41ccbb","method":"ecs_snapshot","params":{"label":"round6"}}
+[browser:debug] [IWSDK-MCP] Received: ecs_snapshot {label: round6}
+[browser:debug] [IWSDK-MCP] Result: {label: round6, entityCount: 18, componentCount: 56, storedSnapshots: Array(1)}
+[IWSDK-MCP] Message received: {"id":"1780056489505-6aedfdf41ccbb","result":{"label":"round6","entityCount":18,"componentCount":56,
+[MCP-IWER] Response for 1780056489505-6aedfdf41ccbb forwarded (first-wins)
+[IWSDK-MCP] Client disconnected
+[IWSDK-MCP] WebSocket upgrade request received
+[IWSDK-MCP] Client connected
+[IWSDK-MCP] Message received: {"id":"1780056496959-fb8467aafecf7","method":"accept_session","params":{}}
+[IWSDK-MCP] Message received: {"id":"1780056496959-fb8467aafecf7","result":{"success":true},"_tabId":"tab-mpqvnmsc-nljpi5","_tabGe
+[MCP-IWER] Response for 1780056496959-fb8467aafecf7 forwarded (first-wins)
+[browser:debug] [IWSDK-MCP] Received: accept_session {}
+[browser:debug] [IWSDK-MCP] Result: {success: true}
+[IWSDK-MCP] Client disconnected
+[IWSDK-MCP] WebSocket upgrade request received
+[IWSDK-MCP] Client connected
+[IWSDK-MCP] Message received: {"id":"1780056499945-1f8bb6f01cff2","method":"get_session_status","params":{}}
+[IWSDK-MCP] Message received: {"id":"1780056499945-1f8bb6f01cff2","result":{"deviceName":"Meta Quest 3","isRuntimeInstalled":true,
+[MCP-IWER] Response for 1780056499945-1f8bb6f01cff2 forwarded (first-wins)
+[browser:debug] [IWSDK-MCP] Received: get_session_status {}
+[browser:debug] [IWSDK-MCP] Result: {deviceName: Meta Quest 3, isRuntimeInstalled: true, sessionActive: true, sessionOffered: false, sessionMode: undefined}
+[IWSDK-MCP] Client disconnected
+[IWSDK-MCP] Client disconnected
+
+🥽 IWSDK Dev Summary (Development):
+  - Device: metaQuest3
+  - Runtime injected: 1116.7KB
+  - Activation mode: localhost
+  - AI: agent mode (WebSocket at /__iwer_mcp)
+  - Note: Runtime only activates on localhost/local networks
+
+
+🥽 IWSDK Dev Summary (Development):
+  - Device: metaQuest3
+  - Runtime injected: 1116.7KB
+  - Activation mode: localhost
+  - AI: agent mode (WebSocket at /__iwer_mcp)
+  - Note: Runtime only activates on localhost/local networks
+
