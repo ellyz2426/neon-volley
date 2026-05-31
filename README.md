@@ -14,7 +14,8 @@ Works in any modern browser. VR headset optional (Meta Quest recommended).
 
 ### Gameplay
 - **Beach volleyball physics**: 4-substep simulation with gravity, air resistance, spin effects, and realistic ball trajectory
-- **3 hit types**: Bump (low ball, high arc), Set (medium height, controlled), Spike (above net, powerful downward smash)
+- **4 hit types**: Bump (low ball, high arc), Set (medium height, controlled), Spike (above net, powerful downward), Block (intercept at net)
+- **Block mechanic**: Intercept opponent shots at the net for a powerful reflection
 - **Net collision**: Ball bounces off net mesh with energy loss, can dribble over the top
 - **Court boundaries**: Out-of-bounds detection with last-touch attribution
 - **Serve mechanic**: Charge-and-release power bar with accuracy/scatter tradeoff
@@ -35,16 +36,18 @@ Works in any modern browser. VR headset optional (Meta Quest recommended).
 - **Hit types**: AI uses bumps, sets, and spikes contextually based on ball position
 
 ### Progression
-- **20 achievements** with localStorage persistence (First Blood, Ace!, Spike Master, Unstoppable, Shutout, and more)
+- **25 achievements** with localStorage persistence (First Blood, Ace!, Spike Master, Wall, Iron Curtain, Unstoppable, Shutout, and more)
 - **Top 20 leaderboard** tracking scores, modes, difficulty, and win/loss
+- **Career stats panel**: Games, wins, win rate, aces, spikes, blocks, best rally, achievement progress
 - **Combo scoring system**: Consecutive point multiplier tracking
 - **Career stats**: Games played, wins, total aces, spikes, blocks, best rally
 
 ### Visuals
 - **Holodeck environment**: Neon grid floor/ceiling, 14 floating wireframe decorations, 40 ambient particles, fog
 - **5 court themes**: Holodeck (cyan), Crimson (red), Ocean (blue), Ultraviolet (purple), Solar (gold) — live-switchable
-- **Ball effects**: Glowing ball with wireframe overlay, dynamic trail, ground shadow, speed-reactive glow
-- **Neon opponent**: Wireframe humanoid with body, head, arms, legs, visor, and hit animations
+- **Ball effects**: Glowing ball with wireframe overlay, speed-reactive trail (hot orange at high speed), ground shadow, speed-reactive glow, serve toss animation
+- **Neon opponent**: Wireframe humanoid with body, head, arms, legs, visor, hit animations, idle bob, and ball tracking
+- **Net proximity glow**: Net top band pulses when ball approaches
 - **Player hands**: Glowing spheres with proximity pulse when near ball
 - **Particle system**: Pooled particles (100 max) with gravity for hits, points, and celebrations
 - **Ball landing markers**: Visual indicators where the ball contacts the ground
@@ -56,7 +59,7 @@ Works in any modern browser. VR headset optional (Meta Quest recommended).
 - **Volume controls**: Independent SFX and music volume sliders in settings
 
 ### UI
-- **13 PanelUI templates** (`.uikitml`), zero HTML DOM — fully VR-compatible
+- **14 PanelUI templates** (`.uikitml`), zero HTML DOM — fully VR-compatible
 - Head-following HUD with score, set info, and combo display
 - Serve power bar with visual charge indicator
 - Countdown overlay for match start
@@ -74,7 +77,7 @@ Works in any modern browser. VR headset optional (Meta Quest recommended).
 
 - IWSDK 0.4.1 (Three.js + ECS)
 - TypeScript (~2,900 lines across 3 source files)
-- 13 `.uikitml` spatial UI templates
+- 14 `.uikitml` spatial UI templates
 - Procedural Web Audio (no audio files)
 - localStorage persistence (achievements, stats, leaderboard)
 - GitHub Pages deployment

@@ -91,4 +91,9 @@ export const ACHIEVEMENTS: AchievementDef[] = [
   { id: 'comeback', name: 'Comeback King', desc: 'Win after 5 consecutive points' },
   { id: 'marathon', name: 'Marathon Match', desc: 'Play for 10 minutes' },
   { id: 'daily-player', name: 'Daily Grind', desc: 'Complete a daily challenge' },
+  { id: 'block-1', name: 'Wall', desc: 'Block an opponent shot' },
+  { id: 'block-10', name: 'Iron Curtain', desc: 'Block 10 shots total' },
+  { id: 'dig-10', name: 'Dig Deep', desc: 'Save 10 low balls with bumps' },
+  { id: 'serve-ace-3', name: 'Ace Streak', desc: '3 aces in one match' },
+  { id: 'all-modes', name: 'Versatile', desc: 'Play every game mode' },
 ];

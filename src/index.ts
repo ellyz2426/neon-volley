@@ -913,6 +913,10 @@ function updateInput(dt: number) {
     }
     if (gsm.isCharging) {
       gsm.serveCharge = Math.min(1, gsm.serveCharge + dt * 1.2);
+      // Ball toss animation while charging
+      const tossHeight = 1.2 + gsm.serveCharge * 1.5;
+      ballMesh.position.set(gsm.playerX, tossHeight, gsm.playerZ);
+      ballMesh.visible = true;
       if (world.input.keyboard.getKeyUp('Space') || rightGP?.getButtonUp?.(InputComponent.Trigger)) {
         performServe();
       }
@@ -966,12 +970,23 @@ function attemptHit() {
   const ballHeight = gsm.ballPos.y;
   const isAboveNet = ballHeight > NET_HEIGHT - 0.3;
   const isNearNet = gsm.playerZ > -3;
+  const ballComingFromOpponent = gsm.ballVel.z < -1 && !gsm.lastTouchPlayer;
 
   let hitPower: number;
   let hitAngleY: number;
   let hitType: string;
 
-  if (isAboveNet && isNearNet && ballHeight > 2.0) {
+  if (isAboveNet && isNearNet && ballComingFromOpponent && ballHeight > 1.8) {
+    // BLOCK — ball coming from opponent at net height
+    hitPower = gsm.ballVel.length() * 0.8; // Reflect with reduced speed
+    hitAngleY = 0.2;
+    hitType = 'block';
+    gsm.blocks++;
+    gsm.totalBlocks++;
+    audio.playSpike(); // Reuse spike sound with lower volume
+    spawnParticles(gsm.ballPos.clone(), '#ffffff', 12, 3);
+    showToast('BLOCK!', '#ffffff');
+  } else if (isAboveNet && isNearNet && ballHeight > 2.0) {
     // SPIKE
     hitPower = SPIKE_POWER;
     hitAngleY = 0.15; // Downward
@@ -1000,11 +1015,20 @@ function attemptHit() {
 
   // Apply hit
   const aimX = (Math.random() - 0.5) * 2;
-  gsm.ballVel.set(
-    aimX * hitPower * 0.3,
-    hitPower * hitAngleY,
-    hitPower * (1 - hitAngleY * 0.5)
-  );
+  if (hitType === 'block') {
+    // Block reflects ball back with reduced speed
+    gsm.ballVel.set(
+      aimX * hitPower * 0.2,
+      hitPower * hitAngleY,
+      hitPower * 0.7 // Send back to opponent side
+    );
+  } else {
+    gsm.ballVel.set(
+      aimX * hitPower * 0.3,
+      hitPower * hitAngleY,
+      hitPower * (1 - hitAngleY * 0.5)
+    );
+  }
   gsm.lastTouchPlayer = true;
   gsm.playerTouches++;
   gsm.rallyLength++;
@@ -1478,6 +1502,22 @@ function updateBallVisuals() {
   // Glow intensity based on speed
   const glowIntensity = Math.min(0.4, speed * 0.02);
   (ballGlow.material as MeshBasicMaterial).opacity = 0.1 + glowIntensity;
+
+  // Net proximity pulse — top band glows when ball is close
+  if (netMesh && gsm.ballActive) {
+    const distToNet = Math.abs(gsm.ballPos.z);
+    const nearNet = distToNet < 1.5 && gsm.ballPos.y > NET_HEIGHT - 1.5 && gsm.ballPos.y < NET_HEIGHT + 0.5;
+    const topBand = netMesh.children[2]; // top band is 3rd child
+    if (topBand && (topBand as Mesh).material) {
+      const mat = (topBand as Mesh).material as MeshStandardMaterial;
+      if (nearNet) {
+        const pulse = 0.8 + Math.sin(performance.now() / 100) * 0.5;
+        mat.emissiveIntensity = pulse;
+      } else {
+        mat.emissiveIntensity = 0.8; // Default
+      }
+    }
+  }
 }
 
 function updateBallTrail() {
@@ -2003,6 +2043,10 @@ function checkAchievements() {
     ['comeback', () => gsm.playerScore >= gsm.getTargetScore() && gsm.consecutivePoints >= 5],
     ['marathon', () => gsm.matchTime >= 600],
     ['daily-player', () => gsm.mode === 'daily' && gsm.gamesPlayed >= 1],
+    ['block-1', () => gsm.totalBlocks >= 1],
+    ['block-10', () => gsm.totalBlocks >= 10],
+    ['dig-10', () => gsm.digs >= 10],
+    ['serve-ace-3', () => gsm.aces >= 3],
   ];
 
   for (const [id, check] of checks) {
