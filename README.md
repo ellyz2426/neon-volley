@@ -1,72 +1,82 @@
-# Neon Curling VR
+# Neon Volley VR
 
-Holodeck VR curling — slide neon stones down a glowing ice sheet, sweep to control speed, and outmaneuver the AI opponent in this precision ice sport.
+Holodeck VR beach volleyball — smash neon balls across a glowing court, outplay the AI opponent with bumps, sets, and spikes in this intense arcade volleyball experience.
 
 Built with [IWSDK 0.4.1](https://iwsdk.dev) (Immersive Web SDK).
 
 ## 🎮 Play
 
-**[▶ Play Now](https://ellyz2426.github.io/neon-curling/)**
+**[▶ Play Now](https://ellyz2426.github.io/neon-volley/)**
 
 Works in any modern browser. VR headset optional (Meta Quest recommended).
 
 ## Features
 
 ### Gameplay
-- **Custom curling physics**: ice friction, swept friction, curl spin, elastic stone-stone collisions, wall bouncing, hog-line violations
-- **6 game modes**: Standard (8 ends), Quick (4 ends), Knockout (1 stone), Tournament (4-team bracket), Daily Challenge (seeded PRNG), Practice
-- **3 AI difficulty levels** with strategic AI (takeouts, draws, guards, freeze shots, come-around curls, hammer strategy)
-- **Hammer tracking** — authentic curling rule: scoring team gives up last-stone advantage
-- **Extra end tiebreaker** — sudden death if tied after regulation
-- **Ice condition system** — Standard, Fast, Slow, Curly ice modifiers (randomized in daily challenges)
-- **Sweeping mechanic** reduces friction (Space key / left VR trigger)
-- **Curl spin control** for curved shots (A/D keys / thumbstick)
-- **Concede option** from pause menu
+- **Beach volleyball physics**: 4-substep simulation with gravity, air resistance, spin effects, and realistic ball trajectory
+- **3 hit types**: Bump (low ball, high arc), Set (medium height, controlled), Spike (above net, powerful downward smash)
+- **Net collision**: Ball bounces off net mesh with energy loss, can dribble over the top
+- **Court boundaries**: Out-of-bounds detection with last-touch attribution
+- **Serve mechanic**: Charge-and-release power bar with accuracy/scatter tradeoff
+- **Ace detection**: Score directly off a serve for bonus recognition
+
+### Game Modes
+- **Match**: Full match — first to 21, win by 2, best of 3 sets
+- **Quick Match**: Short game — first to 11, single set
+- **Rally**: Keep the rally alive as long as possible, track your best
+- **Serve Practice**: Hone your serve accuracy and power
+- **Spike Drill**: Ball tossed up for spike practice
+- **Daily Challenge**: Seeded difficulty that changes daily
+
+### AI Opponent
+- **3 difficulty levels**: Easy, Medium, Hard
+- **Adaptive behavior**: Prediction-based movement, reaction time, accuracy, hit range
+- **AI serves**: Opponent serves with difficulty-scaled power and accuracy
+- **Hit types**: AI uses bumps, sets, and spikes contextually based on ball position
 
 ### Progression
-- **XP / level system** — earn XP for wins, difficulty, scoring, tournament play
-- **30 achievements** with localStorage persistence
-- **8 stone skins** unlocked by wins (Championship Gold from tournament)
-- **Career stats tracking** — games, wins, takeouts, sweep time, best end, win rate
-- **Top 20 leaderboard**
+- **20 achievements** with localStorage persistence (First Blood, Ace!, Spike Master, Unstoppable, Shutout, and more)
+- **Top 20 leaderboard** tracking scores, modes, difficulty, and win/loss
+- **Combo scoring system**: Consecutive point multiplier tracking
+- **Career stats**: Games played, wins, total aces, spikes, blocks, best rally
 
 ### Visuals
-- **Holodeck environment**: grid floor/ceiling, 12 floating wireframe decorations, 40 ambient particles
-- **5 ice themes**: Holodeck, Crimson, Toxic, Ultraviolet, Solar
-- **Ice pebble marks** — 200 surface detail dots
-- **Stone trail rendering** — glowing marks on ice behind sliding stones
-- **Animated house ring scoring** — ring brightness pulses during scoring
-- **Stone spin visualization** — visible rotation during curl
-- **Button-proximity glow** — closest stones pulse brighter
-- **Power charge indicator** — stone scales up while charging
-- **Celebration particles** — burst on scoring
-- **End summary panel** — detailed breakdown after each end
+- **Holodeck environment**: Neon grid floor/ceiling, 14 floating wireframe decorations, 40 ambient particles, fog
+- **5 court themes**: Holodeck (cyan), Crimson (red), Ocean (blue), Ultraviolet (purple), Solar (gold) — live-switchable
+- **Ball effects**: Glowing ball with wireframe overlay, dynamic trail, ground shadow, speed-reactive glow
+- **Neon opponent**: Wireframe humanoid with body, head, arms, legs, visor, and hit animations
+- **Player hands**: Glowing spheres with proximity pulse when near ball
+- **Particle system**: Pooled particles (100 max) with gravity for hits, points, and celebrations
+- **Ball landing markers**: Visual indicators where the ball contacts the ground
+- **Court lines**: Boundary, center, attack, and service zone markings
 
 ### Audio
-- **20+ procedural Web Audio SFX**: stone release, collision, sweep, takeout, hog violation, score, achievement, extra end, tournament win, skin unlock, countdown, game start/end
-- **Ambient synthwave drone** music with bass + pad + LFO
+- **15+ procedural Web Audio SFX**: Serve, bump, set, spike, net hit, point won/lost, ace, victory/defeat, countdown, game start, achievement unlock
+- **Ambient synthwave drone** music with bass oscillator + triangle pad + LFO modulation
+- **Volume controls**: Independent SFX and music volume sliders in settings
 
 ### UI
-- **19 PanelUI templates** (`.uikitml`), zero HTML DOM — fully VR-compatible
-- HUD with end, scores, stones, turn, hammer indicator, best stone distance
-- Practice mode tips with rotating suggestions
+- **13 PanelUI templates** (`.uikitml`), zero HTML DOM — fully VR-compatible
+- Head-following HUD with score, set info, and combo display
+- Serve power bar with visual charge indicator
+- Countdown overlay for match start
+- Toast notifications for points, aces, achievements
+- World-space panels: title, mode select, difficulty, pause, game over, leaderboard, achievements, settings, help
 
 ### Controls
 | Action | Browser | VR |
 |--------|---------|-----|
-| Charge & Throw | Click + hold, release | Right Trigger |
-| Aim | Mouse left/right | Right Thumbstick |
-| Sweep | Hold Space | Left Trigger |
-| Curl | A/D keys | Right Thumbstick X |
+| Move | WASD / Arrows | Left Thumbstick |
+| Serve / Hit | Space | Right Trigger |
 | Pause | Escape | B Button |
 
 ## Tech
 
 - IWSDK 0.4.1 (Three.js + ECS)
-- TypeScript (~2,500 lines across 3 source files)
-- 19 `.uikitml` spatial UI templates
+- TypeScript (~2,900 lines across 3 source files)
+- 13 `.uikitml` spatial UI templates
 - Procedural Web Audio (no audio files)
-- localStorage persistence (achievements, stats, skins, leaderboard)
+- localStorage persistence (achievements, stats, leaderboard)
 - GitHub Pages deployment
 
 ## Build

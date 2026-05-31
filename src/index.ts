@@ -121,7 +121,13 @@ class GameStateManager {
   gameStarted = false;
   paused = false;
 
-  // Persistence
+  // Practice stats
+  serveAttempts = 0;
+  serveHits = 0;
+  spikeAttempts = 0;
+  spikeHits = 0;
+  practiceTimer = 0;
+  practiceTimeLimit = 60; // 60 seconds for practice modes
   gamesPlayed = 0;
   gamesWon = 0;
   totalAces = 0;
@@ -204,6 +210,11 @@ class GameStateManager {
     this.matchTime = 0;
     this.totalRallies = 0;
     this.longestRally = 0;
+    this.serveAttempts = 0;
+    this.serveHits = 0;
+    this.spikeAttempts = 0;
+    this.spikeHits = 0;
+    this.practiceTimer = 0;
     this.resetRound();
   }
 
@@ -238,6 +249,14 @@ let ballShadow: Mesh;
 let decorations: Group;
 let ambientParticles: Mesh[];
 let accentLights: PointLight[];
+
+// Landing markers
+let landingMarkers: { mesh: Mesh; life: number }[] = [];
+
+// Opponent animation
+let opponentArmAngle = 0;
+let opponentArmTarget = 0;
+let opponentBobPhase = 0;
 
 // Particles
 const MAX_PARTICLES = 100;
@@ -316,8 +335,18 @@ async function main() {
       updateBallTrail();
       updateBallShadow();
       updateParticles(dt);
+      updateLandingMarkers(dt);
+      updateOpponentAnimation(dt);
       updateHUD();
       updateServeBar();
+
+      // Practice mode timer
+      if (gsm.mode === 'serve' || gsm.mode === 'spike') {
+        gsm.practiceTimer += dt;
+        if (gsm.practiceTimer >= gsm.practiceTimeLimit) {
+          endPracticeMode();
+        }
+      }
     } else if (gsm.state === 'countdown') {
       gsm.countdown -= dt;
       updateCountdown();
@@ -333,7 +362,8 @@ async function main() {
         if (gsm.mode === 'spike') {
           startSpikeDrill();
         } else if (gsm.mode === 'serve') {
-          // Ready to serve
+          showUI('servebar');
+          gsm.servingPlayer = true;
         }
         audio.playGameStart();
       }
@@ -1067,6 +1097,11 @@ function updateBallPhysics(dt: number) {
 
 function scorePoint() {
   gsm.ballActive = false;
+
+  // Spawn landing marker
+  const theme = THEMES[gsm.theme];
+  spawnLandingMarker(gsm.ballPos.clone(), gsm.lastTouchPlayer ? theme.accent : '#ff4444');
+
   const ballInBounds = Math.abs(gsm.ballPos.x) <= COURT_WIDTH / 2 + 0.1 &&
     Math.abs(gsm.ballPos.z) <= COURT_LENGTH / 2 + 0.1;
 
@@ -1092,6 +1127,50 @@ function scorePoint() {
   // Out of bounds beyond court
   if (gsm.ballPos.z < -COURT_LENGTH / 2 - 1 || gsm.ballPos.z > COURT_LENGTH / 2 + 1) {
     playerWinsPoint = !gsm.lastTouchPlayer; // Last touch hit it out
+  }
+
+  // Practice modes — track stats and reset immediately
+  if (gsm.mode === 'serve') {
+    gsm.serveAttempts++;
+    if (playerWinsPoint) {
+      gsm.serveHits++;
+      if (gsm.rallyLength === 0 && gsm.servingPlayer) {
+        gsm.aces++;
+        gsm.totalAces++;
+        showToast('ACE!', '#ffd700');
+        audio.playAce();
+      } else {
+        showToast('Good serve!', '#00ff88');
+        audio.playPointWon();
+      }
+    } else {
+      showToast('Out / Fault', '#ff4444');
+      audio.playPointLost();
+    }
+    gsm.playerScore = gsm.serveHits;
+    updateHUD();
+    checkAchievements();
+    gsm.resetRound();
+    showUI('servebar');
+    return;
+  }
+
+  if (gsm.mode === 'spike') {
+    if (gsm.lastTouchPlayer && gsm.spikes > 0) {
+      gsm.spikeHits++;
+      showToast('SPIKE HIT!', '#ff4400');
+      audio.playPointWon();
+    } else {
+      showToast('Missed', '#ff4444');
+      audio.playPointLost();
+    }
+    gsm.playerScore = gsm.spikeHits;
+    updateHUD();
+    checkAchievements();
+    setTimeout(() => {
+      if (gsm.state === 'playing') startSpikeDrill();
+    }, 1000);
+    return;
   }
 
   if (gsm.mode === 'rally') {
@@ -1274,6 +1353,7 @@ function performAIHit(diff: { accuracy: number }) {
   gsm.lastTouchPlayer = false;
   gsm.opponentTouches++;
   gsm.rallyLength++;
+  triggerOpponentHitAnimation();
 
   const ballHeight = gsm.ballPos.y;
   const isNearNet = gsm.aiZ < 3;
@@ -1332,18 +1412,56 @@ function performAIServe() {
 
   audio.playServe();
   spawnParticles(gsm.ballPos.clone(), '#ff6600', 6, 2);
+  triggerOpponentHitAnimation();
 }
 
 // ============================================================
 // SPIKE DRILL
 // ============================================================
 function startSpikeDrill() {
+  gsm.spikeAttempts++;
   // Toss ball up for player to spike
   gsm.ballPos.set(gsm.playerX + (Math.random() - 0.5), 3.5, gsm.playerZ + 2);
   gsm.ballVel.set((Math.random() - 0.5) * 0.5, 2, 0.5);
   gsm.ballActive = true;
   gsm.lastTouchPlayer = false;
   gsm.playerTouches = 0;
+}
+
+function endPracticeMode() {
+  gsm.state = 'gameover';
+  gsm.gamesPlayed++;
+  const won = true; // Practice is always "completed"
+  gsm.savePersistence();
+  updatePracticeOverPanel();
+  hideUI('hud');
+  hideUI('servebar');
+  showUI('gameover');
+  audio.playWin();
+  spawnParticles(new Vector3(0, 3, -3), '#ffd700', 15, 4);
+}
+
+function updatePracticeOverPanel() {
+  const doc = getDoc('gameover');
+  if (!doc) return;
+  if (gsm.mode === 'serve') {
+    setText(doc, 'result-text', 'SERVE PRACTICE');
+    setText(doc, 'final-score', `Serves: ${gsm.serveAttempts}`);
+    setText(doc, 'sets-score', `Aces: ${gsm.aces}`);
+    setText(doc, 'stats-text',
+      `Hit Rate: ${gsm.serveAttempts > 0 ? Math.round((gsm.serveHits / gsm.serveAttempts) * 100) : 0}%\n` +
+      `Total Aces: ${gsm.totalAces}\n` +
+      `Time: ${Math.floor(gsm.practiceTimer / 60)}:${String(Math.floor(gsm.practiceTimer % 60)).padStart(2, '0')}`
+    );
+  } else if (gsm.mode === 'spike') {
+    setText(doc, 'result-text', 'SPIKE DRILL');
+    setText(doc, 'final-score', `Spikes: ${gsm.spikeHits}/${gsm.spikeAttempts}`);
+    setText(doc, 'sets-score', `Accuracy: ${gsm.spikeAttempts > 0 ? Math.round((gsm.spikeHits / gsm.spikeAttempts) * 100) : 0}%`);
+    setText(doc, 'stats-text',
+      `Total Spikes: ${gsm.totalSpikes}\n` +
+      `Time: ${Math.floor(gsm.practiceTimer / 60)}:${String(Math.floor(gsm.practiceTimer % 60)).padStart(2, '0')}`
+    );
+  }
 }
 
 // ============================================================
@@ -1404,6 +1522,87 @@ function updateBallShadow() {
     (ballShadow.material as MeshBasicMaterial).opacity = heightScale * 0.3;
     ballShadow.visible = gsm.ballActive;
   }
+}
+
+// ============================================================
+// LANDING MARKERS
+// ============================================================
+function spawnLandingMarker(pos: Vector3, color: string) {
+  const geo = new RingGeometry(0.05, 0.25, 16);
+  const mat = new MeshBasicMaterial({
+    color: new Color(color),
+    transparent: true,
+    opacity: 0.8,
+    blending: AdditiveBlending,
+  });
+  const mesh = new Mesh(geo, mat);
+  mesh.rotation.x = -Math.PI / 2;
+  mesh.position.set(pos.x, 0.03, pos.z);
+  world.scene.add(mesh);
+  landingMarkers.push({ mesh, life: 0 });
+  // Cap markers
+  while (landingMarkers.length > 10) {
+    const old = landingMarkers.shift()!;
+    world.scene.remove(old.mesh);
+    old.mesh.geometry.dispose();
+  }
+}
+
+function updateLandingMarkers(dt: number) {
+  for (let i = landingMarkers.length - 1; i >= 0; i--) {
+    const m = landingMarkers[i];
+    m.life += dt;
+    const fade = Math.max(0, 1 - m.life / 3); // 3 second fade
+    (m.mesh.material as MeshBasicMaterial).opacity = fade * 0.8;
+    m.mesh.scale.setScalar(1 + m.life * 0.3); // Grow slightly
+    if (m.life >= 3) {
+      world.scene.remove(m.mesh);
+      m.mesh.geometry.dispose();
+      landingMarkers.splice(i, 1);
+    }
+  }
+}
+
+// ============================================================
+// OPPONENT ANIMATION
+// ============================================================
+function updateOpponentAnimation(dt: number) {
+  if (!opponentMesh) return;
+
+  // Bob up and down slightly when moving
+  const isMoving = Math.abs(gsm.aiTargetX - gsm.aiX) > 0.2 || Math.abs(gsm.aiTargetZ - gsm.aiZ) > 0.2;
+  if (isMoving) {
+    opponentBobPhase += dt * 8;
+    opponentMesh.position.y = Math.abs(Math.sin(opponentBobPhase)) * 0.05;
+  } else {
+    // Subtle idle breathing
+    opponentBobPhase += dt * 2;
+    opponentMesh.position.y = Math.sin(opponentBobPhase) * 0.015;
+  }
+
+  // Arm animation — smooth toward target
+  opponentArmAngle += (opponentArmTarget - opponentArmAngle) * dt * 10;
+  opponentArmTarget = Math.max(0, opponentArmTarget - dt * 3); // Return to rest
+
+  // Apply arm rotation to children (arms are indices 3 and 4)
+  const arms = opponentMesh.children.filter((_, i) => i === 3 || i === 4);
+  arms.forEach((arm, idx) => {
+    const sign = idx === 0 ? -1 : 1;
+    arm.rotation.x = -opponentArmAngle * 1.2;
+    arm.rotation.z = sign * (-0.3 + opponentArmAngle * 0.2);
+  });
+
+  // Face the ball when active
+  if (gsm.ballActive && gsm.ballPos.z > 0) {
+    const lookAngle = Math.atan2(gsm.ballPos.x - gsm.aiX, gsm.ballPos.z - gsm.aiZ);
+    opponentMesh.rotation.y = lookAngle * 0.3; // Subtle body turn
+  } else {
+    opponentMesh.rotation.y *= 0.95; // Return to center
+  }
+}
+
+function triggerOpponentHitAnimation() {
+  opponentArmTarget = Math.PI * 0.6; // Raise arms for hit
 }
 
 function updatePlayerHands(dt: number) {
@@ -1649,10 +1848,20 @@ function updateHUD() {
 
   if (gsm.mode === 'rally') {
     setText(doc, 'score-display', `Rally: ${gsm.rallyLength} | Best: ${gsm.longestRally}`);
+  } else if (gsm.mode === 'serve') {
+    const timeLeft = Math.max(0, Math.ceil(gsm.practiceTimeLimit - gsm.practiceTimer));
+    setText(doc, 'score-display', `Serves: ${gsm.serveHits} | Aces: ${gsm.aces}`);
+    setText(doc, 'set-display', `TIME: ${timeLeft}s`);
+  } else if (gsm.mode === 'spike') {
+    const timeLeft = Math.max(0, Math.ceil(gsm.practiceTimeLimit - gsm.practiceTimer));
+    setText(doc, 'score-display', `Spikes: ${gsm.spikeHits}/${gsm.spikeAttempts}`);
+    setText(doc, 'set-display', `TIME: ${timeLeft}s`);
   } else {
     setText(doc, 'score-display', `${gsm.playerScore} - ${gsm.opponentScore}`);
   }
-  setText(doc, 'set-display', gsm.mode === 'match' ? `Set ${gsm.currentSet} | ${gsm.playerSets}-${gsm.opponentSets}` : gsm.mode.toUpperCase());
+  if (gsm.mode !== 'serve' && gsm.mode !== 'spike') {
+    setText(doc, 'set-display', gsm.mode === 'match' ? `Set ${gsm.currentSet} | ${gsm.playerSets}-${gsm.opponentSets}` : gsm.mode.toUpperCase());
+  }
   setText(doc, 'combo-display', gsm.combo > 1 ? `x${gsm.combo} COMBO` : '');
 }
 
@@ -1794,8 +2003,85 @@ function cycleTheme(dir: number) {
   const next = (idx + dir + themeKeys.length) % themeKeys.length;
   gsm.theme = themeKeys[next];
   updateSettingsDisplay();
-  // Would rebuild court/environment in a full implementation
+  applyThemeColors();
   audio.playClick();
+}
+
+function applyThemeColors() {
+  const theme = THEMES[gsm.theme];
+
+  // Court floor
+  if (courtFloor) {
+    (courtFloor.material as MeshStandardMaterial).color.set(theme.floor);
+  }
+
+  // Accent lights
+  if (accentLights) {
+    const lightColors = [theme.accent, theme.highlight, theme.accent];
+    accentLights.forEach((light, i) => {
+      light.color.set(lightColors[i]);
+    });
+  }
+
+  // Net top band emissive
+  if (netMesh) {
+    netMesh.children.forEach(child => {
+      const mesh = child as Mesh;
+      if (mesh.material && (mesh.material as MeshStandardMaterial).emissive) {
+        const mat = mesh.material as MeshStandardMaterial;
+        if (mat.emissiveIntensity > 0.4) {
+          mat.emissive.set(theme.accent);
+          mat.color.set(theme.accent);
+        }
+      }
+    });
+  }
+
+  // Opponent color
+  if (opponentMesh) {
+    opponentMesh.children.forEach(child => {
+      const mesh = child as Mesh;
+      if (mesh.material) {
+        const mat = mesh.material as MeshStandardMaterial;
+        if (mat.emissiveIntensity >= 1.0) {
+          // Visor — use accent
+          mat.color.set(theme.accent);
+          mat.emissive.set(theme.accent);
+        } else if (mat.emissiveIntensity > 0) {
+          // Body parts — use opponent color
+          mat.color.set(theme.opponentColor);
+          mat.emissive.set(theme.opponentColor);
+        }
+      }
+    });
+  }
+
+  // Fog
+  if (world?.scene?.fog) {
+    // Keep fog dark but tint slightly
+    world.scene.fog.color.set('#0a0a1a');
+  }
+
+  // Ball wireframe/glow colors
+  if (ballGlow) {
+    (ballGlow.material as MeshBasicMaterial).color.set(theme.accent);
+  }
+  if (ballMesh && ballMesh.children.length > 1) {
+    const wireChild = ballMesh.children[1]; // wireframe is second child
+    if (wireChild && (wireChild as LineSegments).material) {
+      ((wireChild as LineSegments).material as LineBasicMaterial).color.set(theme.accent);
+    }
+  }
+
+  // Player hands
+  if (playerHandMeshL) {
+    (playerHandMeshL.material as MeshStandardMaterial).color.set(theme.accent);
+    (playerHandMeshL.material as MeshStandardMaterial).emissive.set(theme.accent);
+  }
+  if (playerHandMeshR) {
+    (playerHandMeshR.material as MeshStandardMaterial).color.set(theme.accent);
+    (playerHandMeshR.material as MeshStandardMaterial).emissive.set(theme.accent);
+  }
 }
 
 function updateSettingsDisplay() {
