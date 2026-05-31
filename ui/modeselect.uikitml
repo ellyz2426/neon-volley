@@ -54,6 +54,22 @@
     color: #ffaa00;
     font-weight: bold;
   }
+  .btn-gold {
+    padding-top: 1;
+    padding-bottom: 1;
+    padding-left: 3;
+    padding-right: 3;
+    background-color: rgba(255, 215, 0, 0.2);
+    border-color: #ffd700;
+    border-width: 0.12;
+    border-radius: 0.8;
+    cursor: pointer;
+  }
+  .btn-gold-text {
+    font-size: 1.8;
+    color: #ffd700;
+    font-weight: bold;
+  }
   .back-btn {
     padding-top: 0.6;
     padding-bottom: 0.6;
@@ -72,6 +88,10 @@
 </style>
 <div class="panel">
   <span class="heading">SELECT MODE</span>
+  <div id="btn-tournament" class="btn-gold">
+    <span class="btn-gold-text">TOURNAMENT</span>
+    <span class="btn-desc">Beat 3 opponents to become champion</span>
+  </div>
   <div id="btn-match" class="btn">
     <span class="btn-text">MATCH</span>
     <span class="btn-desc">Best of 3 sets to 21</span>

@@ -8,6 +8,10 @@ export class AudioManager {
   droneOsc: OscillatorNode | null = null;
   padOsc: OscillatorNode | null = null;
 
+  // Rally intensity
+  private rallyDroneNode: OscillatorNode | null = null;
+  private rallyDroneGain: GainNode | null = null;
+
   private init() {
     if (this.ctx) return;
     try {
@@ -61,6 +65,27 @@ export class AudioManager {
     this.padOsc.connect(padGain);
     padGain.connect(this.musicGain);
     this.padOsc.start();
+
+    // Rally intensity drone (starts silent, intensifies with rallies)
+    this.rallyDroneNode = this.ctx.createOscillator();
+    this.rallyDroneNode.type = 'sawtooth';
+    this.rallyDroneNode.frequency.value = 110;
+    this.rallyDroneGain = this.ctx.createGain();
+    this.rallyDroneGain.gain.value = 0;
+    const rallyFilter = this.ctx.createBiquadFilter();
+    rallyFilter.type = 'lowpass';
+    rallyFilter.frequency.value = 400;
+    this.rallyDroneNode.connect(rallyFilter);
+    rallyFilter.connect(this.rallyDroneGain);
+    this.rallyDroneGain.connect(this.musicGain);
+    this.rallyDroneNode.start();
+  }
+
+  /** Update rally intensity drone volume (0-1 range) */
+  setRallyIntensity(intensity: number) {
+    if (!this.rallyDroneGain || !this.ctx) return;
+    const vol = Math.min(0.08, intensity * 0.08);
+    this.rallyDroneGain.gain.setTargetAtTime(vol, this.ctx.currentTime, 0.1);
   }
 
   private playSFX(freq: number, type: OscillatorType, duration: number, volume = 0.3) {
@@ -183,5 +208,52 @@ export class AudioManager {
 
   playAchievement() {
     this.playArpeggio([523, 659, 784, 1047, 1319], 'triangle', 0.1, 0.25);
+  }
+
+  /** Crowd cheer burst — layered noise with filtered high-pass for crowd feel */
+  playCrowdCheer(intensity = 0.5) {
+    this.init();
+    if (!this.ctx || !this.sfxGain) return;
+    const duration = 0.6 + intensity * 0.4;
+    const bufferSize = Math.floor(this.ctx.sampleRate * duration);
+    const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    // Modulated noise for crowd-like texture
+    for (let i = 0; i < bufferSize; i++) {
+      const t = i / this.ctx.sampleRate;
+      const env = Math.sin(Math.PI * t / duration); // bell curve envelope
+      data[i] = (Math.random() - 0.5) * 2 * env * (0.8 + Math.sin(t * 30) * 0.2);
+    }
+    const source = this.ctx.createBufferSource();
+    source.buffer = buffer;
+    const hpFilter = this.ctx.createBiquadFilter();
+    hpFilter.type = 'highpass';
+    hpFilter.frequency.value = 300;
+    const lpFilter = this.ctx.createBiquadFilter();
+    lpFilter.type = 'lowpass';
+    lpFilter.frequency.value = 3000;
+    const gain = this.ctx.createGain();
+    gain.gain.value = intensity * 0.12 * this.sfxVolume;
+    source.connect(hpFilter);
+    hpFilter.connect(lpFilter);
+    lpFilter.connect(gain);
+    gain.connect(this.sfxGain!);
+    source.start();
+  }
+
+  /** Tournament victory fanfare — triumphant ascending sequence */
+  playTournamentWin() {
+    this.playArpeggio([262, 330, 392, 523, 659, 784, 1047, 1319], 'sine', 0.12, 0.35);
+    setTimeout(() => {
+      this.playArpeggio([523, 784, 1047, 1568], 'triangle', 0.15, 0.25);
+      this.playCrowdCheer(1.0);
+    }, 1000);
+  }
+
+  /** Impact thud for spikes and blocks */
+  playImpact() {
+    this.init();
+    this.playSFX(80, 'sine', 0.15, 0.35);
+    this.playSFX(60, 'sine', 0.2, 0.2);
   }
 }

@@ -11,15 +11,19 @@
     border-color: #ffd700;
     border-width: 0.15;
     border-radius: 1.5;
-    gap: 0.6;
+    gap: 0.5;
   }
   .heading {
     font-size: 3;
     color: #ffd700;
     font-weight: bold;
   }
+  .count {
+    font-size: 1.3;
+    color: #ffcc44;
+  }
   .entry {
-    font-size: 1.1;
+    font-size: 1;
     color: #ccccdd;
   }
   .back-btn {
@@ -40,6 +44,7 @@
 </style>
 <div class="panel">
   <span class="heading">ACHIEVEMENTS</span>
+  <span id="ach-count" class="count">0 / 30</span>
   <span id="ach-0" class="entry">[ ] First Blood</span>
   <span id="ach-1" class="entry">[ ] Victor</span>
   <span id="ach-2" class="entry">[ ] Ace!</span>
@@ -60,5 +65,15 @@
   <span id="ach-17" class="entry">[ ] Comeback King</span>
   <span id="ach-18" class="entry">[ ] Marathon Match</span>
   <span id="ach-19" class="entry">[ ] Daily Grind</span>
+  <span id="ach-20" class="entry">[ ] Wall</span>
+  <span id="ach-21" class="entry">[ ] Iron Curtain</span>
+  <span id="ach-22" class="entry">[ ] Dig Deep</span>
+  <span id="ach-23" class="entry">[ ] Ace Streak</span>
+  <span id="ach-24" class="entry">[ ] Versatile</span>
+  <span id="ach-25" class="entry">[ ] Tournament Champion</span>
+  <span id="ach-26" class="entry">[ ] Flawless</span>
+  <span id="ach-27" class="entry">[ ] Speed Demon</span>
+  <span id="ach-28" class="entry">[ ] Rally Warrior</span>
+  <span id="ach-29" class="entry">[ ] Century</span>
   <div id="btn-back" class="back-btn"><span class="back-text">BACK</span></div>
 </div>

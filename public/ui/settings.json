@@ -253,19 +253,96 @@
             "sourceTag": "span",
             "type": "custom",
             "children": [
+              "Ball:"
+            ],
+            "properties": {
+              "class": "label"
+            },
+            "dataUid": "uid-25"
+          },
+          {
+            "type": "container",
+            "sourceTag": "div",
+            "children": [
+              {
+                "sourceTag": "span",
+                "type": "custom",
+                "children": [
+                  "<"
+                ],
+                "properties": {
+                  "class": "ctrl-text"
+                },
+                "dataUid": "uid-27"
+              }
+            ],
+            "properties": {
+              "id": "btn-ball-prev",
+              "class": "btn-ctrl"
+            },
+            "dataUid": "uid-26"
+          },
+          {
+            "sourceTag": "span",
+            "type": "custom",
+            "children": [
+              "NEON"
+            ],
+            "properties": {
+              "id": "ball-val",
+              "class": "value"
+            },
+            "dataUid": "uid-28"
+          },
+          {
+            "type": "container",
+            "sourceTag": "div",
+            "children": [
+              {
+                "sourceTag": "span",
+                "type": "custom",
+                "children": [
+                  ">"
+                ],
+                "properties": {
+                  "class": "ctrl-text"
+                },
+                "dataUid": "uid-30"
+              }
+            ],
+            "properties": {
+              "id": "btn-ball-next",
+              "class": "btn-ctrl"
+            },
+            "dataUid": "uid-29"
+          }
+        ],
+        "properties": {
+          "class": "row"
+        },
+        "dataUid": "uid-24"
+      },
+      {
+        "type": "container",
+        "sourceTag": "div",
+        "children": [
+          {
+            "sourceTag": "span",
+            "type": "custom",
+            "children": [
               "BACK"
             ],
             "properties": {
               "class": "back-text"
             },
-            "dataUid": "uid-25"
+            "dataUid": "uid-32"
           }
         ],
         "properties": {
           "id": "btn-back",
           "class": "back-btn"
         },
-        "dataUid": "uid-24"
+        "dataUid": "uid-31"
       }
     ],
     "properties": {
@@ -454,7 +531,7 @@
         "column": 0
       },
       "end": {
-        "line": 87,
+        "line": 93,
         "column": 6
       }
     },
@@ -684,17 +761,87 @@
         "column": 2
       },
       "end": {
-        "line": 86,
-        "column": 79
+        "line": 91,
+        "column": 8
       }
     },
     "uid-25": {
       "start": {
-        "line": 86,
+        "line": 87,
+        "column": 4
+      },
+      "end": {
+        "line": 87,
+        "column": 36
+      }
+    },
+    "uid-26": {
+      "start": {
+        "line": 88,
+        "column": 4
+      },
+      "end": {
+        "line": 88,
+        "column": 86
+      }
+    },
+    "uid-27": {
+      "start": {
+        "line": 88,
+        "column": 45
+      },
+      "end": {
+        "line": 88,
+        "column": 80
+      }
+    },
+    "uid-28": {
+      "start": {
+        "line": 89,
+        "column": 4
+      },
+      "end": {
+        "line": 89,
+        "column": 49
+      }
+    },
+    "uid-29": {
+      "start": {
+        "line": 90,
+        "column": 4
+      },
+      "end": {
+        "line": 90,
+        "column": 86
+      }
+    },
+    "uid-30": {
+      "start": {
+        "line": 90,
+        "column": 45
+      },
+      "end": {
+        "line": 90,
+        "column": 80
+      }
+    },
+    "uid-31": {
+      "start": {
+        "line": 92,
+        "column": 2
+      },
+      "end": {
+        "line": 92,
+        "column": 79
+      }
+    },
+    "uid-32": {
+      "start": {
+        "line": 92,
         "column": 38
       },
       "end": {
-        "line": 86,
+        "line": 92,
         "column": 73
       }
     }

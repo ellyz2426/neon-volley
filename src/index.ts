@@ -34,7 +34,7 @@ import {
   RingGeometry,
 } from "@iwsdk/core";
 
-import { GameState, CourtTheme, THEMES, ACHIEVEMENTS, GameMode, Difficulty, AchievementDef } from "./types";
+import { GameState, CourtTheme, THEMES, ACHIEVEMENTS, GameMode, Difficulty, AchievementDef, BallSkin, BALL_SKINS, TournamentState, TOURNAMENT_OPPONENTS } from "./types";
 import { AudioManager } from "./audio";
 
 // ============================================================
@@ -136,6 +136,25 @@ class GameStateManager {
   bestRally = 0;
   achievements: Set<string> = new Set();
 
+  // Tournament
+  tournament: TournamentState = {
+    round: 0,
+    wins: 0,
+    losses: 0,
+    opponentNames: TOURNAMENT_OPPONENTS.map(o => o.name),
+    opponentDifficulties: TOURNAMENT_OPPONENTS.map(o => o.difficulty),
+    completed: false,
+    champion: false,
+  };
+  tournamentResults: ('win' | 'loss' | 'pending')[] = ['pending', 'pending', 'pending'];
+
+  // Ball skin
+  ballSkin: BallSkin = 'default';
+
+  // Career tracking
+  totalCareerPoints = 0;
+  modesPlayed: Set<string> = new Set();
+
   constructor() {
     this.loadPersistence();
   }
@@ -152,6 +171,9 @@ class GameStateManager {
         this.totalBlocks = d.totalBlocks || 0;
         this.bestRally = d.bestRally || 0;
         this.achievements = new Set(d.achievements || []);
+        this.totalCareerPoints = d.totalCareerPoints || 0;
+        this.modesPlayed = new Set(d.modesPlayed || []);
+        this.ballSkin = d.ballSkin || 'default';
       }
     } catch {}
   }
@@ -166,6 +188,9 @@ class GameStateManager {
         totalBlocks: this.totalBlocks,
         bestRally: this.bestRally,
         achievements: Array.from(this.achievements),
+        totalCareerPoints: this.totalCareerPoints,
+        modesPlayed: Array.from(this.modesPlayed),
+        ballSkin: this.ballSkin,
       }));
     } catch {}
   }
@@ -221,7 +246,21 @@ class GameStateManager {
   getTargetScore(): number {
     if (this.mode === 'quick') return 11;
     if (this.mode === 'rally') return 999;
+    if (this.mode === 'tournament') return 15; // Shorter matches for tournament
     return 21;
+  }
+
+  resetTournament() {
+    this.tournament = {
+      round: 0,
+      wins: 0,
+      losses: 0,
+      opponentNames: TOURNAMENT_OPPONENTS.map(o => o.name),
+      opponentDifficulties: TOURNAMENT_OPPONENTS.map(o => o.difficulty),
+      completed: false,
+      champion: false,
+    };
+    this.tournamentResults = ['pending', 'pending', 'pending'];
   }
 }
 
@@ -258,6 +297,14 @@ let opponentArmAngle = 0;
 let opponentArmTarget = 0;
 let opponentBobPhase = 0;
 
+// Screen shake
+let screenShakeIntensity = 0;
+let screenShakeDecay = 8;
+
+// Ball deformation
+let ballSquashTimer = 0;
+let ballSquashAxis = new Vector3(0, 1, 0);
+
 // Particles
 const MAX_PARTICLES = 100;
 let particles: { mesh: Mesh; vel: Vector3; life: number; maxLife: number }[] = [];
@@ -277,6 +324,7 @@ let helpEntity: any;
 let toastEntity: any;
 let countdownEntity: any;
 let serveBarEntity: any;
+let tournamentEntity: any;
 
 const uiEntities: Map<string, any> = new Map();
 
@@ -337,8 +385,14 @@ async function main() {
       updateParticles(dt);
       updateLandingMarkers(dt);
       updateOpponentAnimation(dt);
+      updateScreenShake(dt);
+      updateBallDeformation(dt);
       updateHUD();
       updateServeBar();
+
+      // Rally intensity for crowd audio
+      const intensity = Math.min(1, gsm.rallyLength / 20);
+      audio.setRallyIntensity(intensity);
 
       // Practice mode timer
       if (gsm.mode === 'serve' || gsm.mode === 'spike') {
@@ -984,8 +1038,11 @@ function attemptHit() {
     gsm.blocks++;
     gsm.totalBlocks++;
     audio.playSpike(); // Reuse spike sound with lower volume
+    audio.playImpact();
     spawnParticles(gsm.ballPos.clone(), '#ffffff', 12, 3);
     showToast('BLOCK!', '#ffffff');
+    triggerScreenShake(0.15);
+    triggerBallSquash(gsm.ballVel.clone().normalize());
   } else if (isAboveNet && isNearNet && ballHeight > 2.0) {
     // SPIKE
     hitPower = SPIKE_POWER;
@@ -994,8 +1051,11 @@ function attemptHit() {
     gsm.spikes++;
     gsm.totalSpikes++;
     audio.playSpike();
+    audio.playImpact();
     spawnParticles(gsm.ballPos.clone(), '#ff4400', 15, 4);
     showToast('SPIKE!', '#ff4400');
+    triggerScreenShake(0.25);
+    triggerBallSquash(new Vector3(0, -1, 1).normalize());
   } else if (ballHeight < 1.2) {
     // BUMP (underhand, low ball)
     hitPower = BUMP_POWER;
@@ -1223,6 +1283,7 @@ function scorePoint() {
     gsm.playerScore++;
     gsm.consecutivePoints++;
     gsm.combo++;
+    gsm.totalCareerPoints++;
     if (gsm.combo > gsm.maxCombo) gsm.maxCombo = gsm.combo;
 
     // Check for ace (serve that scores directly)
@@ -1231,11 +1292,18 @@ function scorePoint() {
       gsm.totalAces++;
       showToast('ACE!', '#ffd700');
       audio.playAce();
+      audio.playCrowdCheer(0.8);
     } else {
       showToast('POINT!', '#00ff88');
       audio.playPointWon();
+      // Crowd gets louder for combos
+      if (gsm.combo >= 3) {
+        audio.playCrowdCheer(Math.min(1, gsm.combo * 0.15));
+      }
     }
     spawnParticles(gsm.ballPos.clone(), '#00ff88', 12, 3);
+    // Screen shake on exciting points
+    if (gsm.rallyLength >= 10) triggerScreenShake(0.12);
   } else {
     gsm.opponentScore++;
     gsm.consecutivePoints = 0;
@@ -1299,16 +1367,26 @@ function checkSetEnd() {
 function endMatch() {
   gsm.state = 'gameover';
   gsm.gamesPlayed++;
+  gsm.modesPlayed.add(gsm.mode);
   const won = gsm.playerSets > gsm.opponentSets;
   if (won) {
     gsm.gamesWon++;
     audio.playWin();
+    audio.playCrowdCheer(1.0);
     showToast('VICTORY!', '#ffd700');
     spawnParticles(new Vector3(0, 3, -3), '#ffd700', 25, 5);
+    triggerScreenShake(0.3);
   } else {
     audio.playLose();
   }
   gsm.savePersistence();
+
+  // Tournament mode handling
+  if (gsm.mode === 'tournament') {
+    handleTournamentMatchEnd(won);
+    return;
+  }
+
   saveLeaderboard();
   updateGameOverPanel(won);
   hideUI('hud');
@@ -1390,7 +1468,10 @@ function performAIHit(diff: { accuracy: number }) {
     power = SPIKE_POWER * (0.7 + diff.accuracy * 0.3);
     angleY = 0.15;
     audio.playSpike();
+    audio.playImpact();
     spawnParticles(gsm.ballPos.clone(), '#ff6600', 10, 3);
+    triggerScreenShake(0.12);
+    triggerBallSquash(new Vector3(0, -1, -1).normalize());
   } else if (ballHeight < 1.5) {
     // AI bump
     power = BUMP_POWER * (0.8 + diff.accuracy * 0.2);
@@ -1709,6 +1790,7 @@ async function setupUI() {
     { name: 'countdown', config: '/ui/countdown.json', maxW: 0.3, maxH: 0.15, pos: [0, 0, 0], type: 'follower' },
     { name: 'servebar', config: '/ui/servebar.json', maxW: 0.25, maxH: 0.08, pos: [0, 0, 0], type: 'follower' },
     { name: 'stats', config: '/ui/stats.json', maxW: 0.85, maxH: 1.1, pos: [0, 1.8, -3], type: 'world' },
+    { name: 'tournament', config: '/ui/tournament.json', maxW: 0.9, maxH: 1.2, pos: [0, 1.8, -3], type: 'world' },
   ];
 
   for (const cfg of configs) {
@@ -1808,6 +1890,29 @@ function wireUIEvents() {
   }
   wireBtn('modeselect', 'btn-back', () => { hideUI('modeselect'); showUI('title'); audio.playClick(); });
 
+  // Tournament button in mode select
+  wireBtn('modeselect', 'btn-tournament', () => {
+    gsm.mode = 'tournament';
+    gsm.modesPlayed.add('tournament');
+    hideUI('modeselect');
+    gsm.resetTournament();
+    updateTournamentPanel();
+    showUI('tournament');
+    audio.playClick();
+  });
+
+  // Tournament panel
+  wireBtn('tournament', 'btn-tournament-start', () => {
+    hideUI('tournament');
+    startTournamentMatch();
+    audio.playClick();
+  });
+  wireBtn('tournament', 'btn-tournament-back', () => {
+    hideUI('tournament');
+    showUI('modeselect');
+    audio.playClick();
+  });
+
   // Difficulty
   for (const diff of ['easy', 'medium', 'hard'] as Difficulty[]) {
     wireBtn('difficulty', `btn-${diff}`, () => {
@@ -1841,6 +1946,10 @@ function wireUIEvents() {
   wireBtn('settings', 'btn-music-down', () => { audio.musicVolume = Math.max(0, audio.musicVolume - 0.1); updateSettingsDisplay(); });
   wireBtn('settings', 'btn-theme-prev', () => { cycleTheme(-1); });
   wireBtn('settings', 'btn-theme-next', () => { cycleTheme(1); });
+  wireBtn('settings', 'btn-skin-prev', () => { cycleBallSkin(-1); });
+  wireBtn('settings', 'btn-skin-next', () => { cycleBallSkin(1); });
+  wireBtn('settings', 'btn-ball-prev', () => { cycleBallSkin(-1); });
+  wireBtn('settings', 'btn-ball-next', () => { cycleBallSkin(1); });
 
   // Help
   wireBtn('help', 'btn-back', () => { hideUI('help'); showUI('title'); audio.playClick(); });
@@ -1871,6 +1980,7 @@ function wireBtn(panel: string, btnId: string, handler: () => void) {
 // ============================================================
 function startGame() {
   gsm.resetMatch();
+  gsm.modesPlayed.add(gsm.mode);
   if (gsm.mode === 'quick') {
     gsm.setsToWin = 1;
   } else if (gsm.mode === 'match') {
@@ -1924,6 +2034,10 @@ function updateHUD() {
     const timeLeft = Math.max(0, Math.ceil(gsm.practiceTimeLimit - gsm.practiceTimer));
     setText(doc, 'score-display', `Spikes: ${gsm.spikeHits}/${gsm.spikeAttempts}`);
     setText(doc, 'set-display', `TIME: ${timeLeft}s`);
+  } else if (gsm.mode === 'tournament') {
+    const opp = TOURNAMENT_OPPONENTS[gsm.tournament.round];
+    setText(doc, 'score-display', `${gsm.playerScore} - ${gsm.opponentScore}`);
+    setText(doc, 'set-display', `vs ${opp?.name || '???'} | R${gsm.tournament.round + 1}`);
   } else {
     setText(doc, 'score-display', `${gsm.playerScore} - ${gsm.opponentScore}`);
   }
@@ -2047,6 +2161,12 @@ function checkAchievements() {
     ['block-10', () => gsm.totalBlocks >= 10],
     ['dig-10', () => gsm.digs >= 10],
     ['serve-ace-3', () => gsm.aces >= 3],
+    ['all-modes', () => gsm.modesPlayed.size >= 7],
+    ['tournament-champ', () => gsm.tournament.champion],
+    ['flawless-tournament', () => gsm.tournament.champion && gsm.tournament.losses === 0],
+    ['speed-demon', () => gsm.state === 'gameover' && gsm.matchTime < 120 && gsm.playerSets > gsm.opponentSets],
+    ['rally-warrior', () => gsm.longestRally >= 15 && gsm.playerScore > gsm.opponentScore],
+    ['century', () => gsm.totalCareerPoints >= 100],
   ];
 
   for (const [id, check] of checks) {
@@ -2178,6 +2298,245 @@ function updateSettingsDisplay() {
   setText(doc, 'sfx-val', `${Math.round(audio.sfxVolume * 100)}%`);
   setText(doc, 'music-val', `${Math.round(audio.musicVolume * 100)}%`);
   setText(doc, 'theme-val', gsm.theme.toUpperCase());
+  setText(doc, 'skin-val', BALL_SKINS[gsm.ballSkin].name.toUpperCase());
+  setText(doc, 'ball-val', BALL_SKINS[gsm.ballSkin].name.toUpperCase());
+}
+
+// ============================================================
+// TOURNAMENT MODE
+// ============================================================
+function updateTournamentPanel() {
+  const doc = getDoc('tournament');
+  if (!doc) return;
+  const t = gsm.tournament;
+  for (let i = 0; i < 3; i++) {
+    setText(doc, `t-opp-${i}`, TOURNAMENT_OPPONENTS[i].name);
+    if (gsm.tournamentResults[i] === 'win') {
+      setText(doc, `t-status-${i}`, 'WON');
+    } else if (gsm.tournamentResults[i] === 'loss') {
+      setText(doc, `t-status-${i}`, 'LOST');
+    } else if (i === t.round && !t.completed) {
+      setText(doc, `t-status-${i}`, '▶ NEXT');
+    } else {
+      setText(doc, `t-status-${i}`, '--');
+    }
+  }
+  if (t.completed) {
+    if (t.champion) {
+      setText(doc, 't-current', '🏆 CHAMPION! 🏆');
+      setText(doc, 'tournament-subtitle', 'You conquered the tournament!');
+    } else {
+      setText(doc, 't-current', 'ELIMINATED');
+      setText(doc, 'tournament-subtitle', `Defeated in Round ${t.round + 1}`);
+    }
+  } else {
+    const opp = TOURNAMENT_OPPONENTS[t.round];
+    setText(doc, 't-current', `NEXT: vs ${opp.name}`);
+    setText(doc, 'tournament-subtitle', `Round ${t.round + 1} of 3 — ${opp.difficulty.toUpperCase()} difficulty`);
+  }
+}
+
+function startTournamentMatch() {
+  const t = gsm.tournament;
+  if (t.completed) return;
+  const opp = TOURNAMENT_OPPONENTS[t.round];
+  gsm.difficulty = opp.difficulty;
+  gsm.setsToWin = 1; // Single set matches in tournament
+  gsm.resetMatch();
+  hideAllUI();
+  gsm.state = 'countdown';
+  gsm.countdown = 3.5;
+  showUI('countdown');
+  audio.playCountdown();
+  // Set opponent color for tournament
+  updateOpponentColor(opp.color);
+}
+
+function handleTournamentMatchEnd(won: boolean) {
+  const t = gsm.tournament;
+  gsm.tournamentResults[t.round] = won ? 'win' : 'loss';
+  if (won) {
+    t.wins++;
+    t.round++;
+    if (t.round >= 3) {
+      // Won the tournament!
+      t.completed = true;
+      t.champion = true;
+      audio.playTournamentWin();
+      triggerScreenShake(0.4);
+      spawnParticles(new Vector3(0, 3, -3), '#ffd700', 40, 6);
+      spawnParticles(new Vector3(-2, 3, -2), '#ff4400', 20, 4);
+      spawnParticles(new Vector3(2, 3, -2), '#00ffff', 20, 4);
+    }
+  } else {
+    t.losses++;
+    t.completed = true; // Elimination — tournament over
+  }
+
+  gsm.savePersistence();
+  saveLeaderboard();
+  checkAchievements();
+
+  hideUI('hud');
+  hideUI('servebar');
+
+  // Show tournament results after short delay
+  setTimeout(() => {
+    updateTournamentPanel();
+    if (t.completed && t.champion) {
+      updateGameOverPanel(true);
+      const doc = getDoc('gameover');
+      if (doc) {
+        setText(doc, 'result-text', '🏆 TOURNAMENT CHAMPION!');
+        setText(doc, 'stats-text',
+          `Wins: ${t.wins} | Losses: ${t.losses}\n` +
+          `Aces: ${gsm.aces} | Spikes: ${gsm.spikes}\n` +
+          `Best Rally: ${gsm.longestRally}`
+        );
+      }
+      showUI('gameover');
+    } else if (t.completed) {
+      updateGameOverPanel(false);
+      const doc = getDoc('gameover');
+      if (doc) {
+        setText(doc, 'result-text', 'ELIMINATED');
+        setText(doc, 'stats-text',
+          `Defeated by ${TOURNAMENT_OPPONENTS[t.round].name}\n` +
+          `Round ${t.round + 1} of 3\n` +
+          `Wins: ${t.wins} | Losses: ${t.losses}`
+        );
+      }
+      showUI('gameover');
+    } else {
+      // Won match but tournament continues
+      showUI('tournament');
+    }
+  }, 2000);
+}
+
+function updateOpponentColor(color: string) {
+  if (!opponentMesh) return;
+  opponentMesh.children.forEach(child => {
+    const mesh = child as Mesh;
+    if (mesh.material) {
+      const mat = mesh.material as MeshStandardMaterial;
+      if (mat.emissiveIntensity >= 1.0) {
+        // Visor — keep accent
+      } else if (mat.emissiveIntensity > 0) {
+        mat.color.set(color);
+        mat.emissive.set(color);
+      }
+    }
+  });
+}
+
+// ============================================================
+// BALL SKIN SYSTEM
+// ============================================================
+const ballSkinKeys = Object.keys(BALL_SKINS) as BallSkin[];
+
+function cycleBallSkin(dir: number) {
+  const idx = ballSkinKeys.indexOf(gsm.ballSkin);
+  const next = (idx + dir + ballSkinKeys.length) % ballSkinKeys.length;
+  gsm.ballSkin = ballSkinKeys[next];
+  applyBallSkin();
+  updateSettingsDisplay();
+  gsm.savePersistence();
+  audio.playClick();
+}
+
+function applyBallSkin() {
+  const skin = BALL_SKINS[gsm.ballSkin];
+
+  // Ball mesh material
+  if (ballMesh) {
+    const mat = ballMesh.material as MeshStandardMaterial;
+    mat.color.set(skin.color);
+    mat.emissive.set(skin.emissive);
+  }
+
+  // Glow
+  if (ballGlow) {
+    (ballGlow.material as MeshBasicMaterial).color.set(skin.glowColor);
+  }
+
+  // Wireframe (second child of ballMesh)
+  if (ballMesh && ballMesh.children.length > 1) {
+    const wireChild = ballMesh.children[1];
+    if (wireChild && (wireChild as LineSegments).material) {
+      ((wireChild as LineSegments).material as LineBasicMaterial).color.set(skin.wireColor);
+    }
+  }
+}
+
+// ============================================================
+// SCREEN SHAKE
+// ============================================================
+function triggerScreenShake(intensity: number) {
+  screenShakeIntensity = Math.max(screenShakeIntensity, intensity);
+}
+
+function updateScreenShake(dt: number) {
+  if (screenShakeIntensity <= 0.001) {
+    screenShakeIntensity = 0;
+    return;
+  }
+  // Apply random offset to camera
+  const shakeX = (Math.random() - 0.5) * screenShakeIntensity * 0.3;
+  const shakeY = (Math.random() - 0.5) * screenShakeIntensity * 0.2;
+
+  // Use player hands as visual shake proxy (camera is managed by IWSDK)
+  if (playerHandMeshL) {
+    playerHandMeshL.position.x += shakeX;
+    playerHandMeshL.position.y += shakeY;
+  }
+  if (playerHandMeshR) {
+    playerHandMeshR.position.x += shakeX;
+    playerHandMeshR.position.y += shakeY;
+  }
+  // Shake ball mesh slightly
+  if (ballMesh && gsm.ballActive) {
+    ballMesh.position.x += shakeX * 0.5;
+    ballMesh.position.y += shakeY * 0.5;
+  }
+
+  screenShakeIntensity *= Math.exp(-screenShakeDecay * dt);
+}
+
+// ============================================================
+// BALL DEFORMATION (SQUASH/STRETCH)
+// ============================================================
+function triggerBallSquash(axis: Vector3) {
+  ballSquashTimer = 0.2; // 200ms effect
+  ballSquashAxis.copy(axis);
+}
+
+function updateBallDeformation(dt: number) {
+  if (ballSquashTimer <= 0) {
+    ballMesh.scale.set(1, 1, 1);
+    return;
+  }
+
+  ballSquashTimer -= dt;
+  const t = Math.max(0, ballSquashTimer / 0.2); // 0 to 1, 1 at start
+  const squash = 1 - t * 0.3; // Compress to 0.7 of original
+  const stretch = 1 + t * 0.15; // Stretch to 1.15
+
+  // Apply squash along hit axis, stretch perpendicular
+  const absX = Math.abs(ballSquashAxis.x);
+  const absY = Math.abs(ballSquashAxis.y);
+  const absZ = Math.abs(ballSquashAxis.z);
+
+  if (absY >= absX && absY >= absZ) {
+    // Vertical hit — squash Y, stretch X/Z
+    ballMesh.scale.set(stretch, squash, stretch);
+  } else if (absZ >= absX) {
+    // Forward/back hit — squash Z, stretch X/Y
+    ballMesh.scale.set(stretch, stretch, squash);
+  } else {
+    // Side hit — squash X, stretch Y/Z
+    ballMesh.scale.set(squash, stretch, stretch);
+  }
 }
 
 // ============================================================

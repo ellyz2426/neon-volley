@@ -1,0 +1,123 @@
+<style>
+  .panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 3;
+    padding-bottom: 3;
+    padding-left: 4;
+    padding-right: 4;
+    background-color: rgba(0, 10, 30, 0.92);
+    border-color: #ffd700;
+    border-width: 0.2;
+    border-radius: 1.5;
+    gap: 1.5;
+  }
+  .title {
+    font-size: 3.5;
+    color: #ffd700;
+    font-weight: bold;
+  }
+  .subtitle {
+    font-size: 1.5;
+    color: #ffcc44;
+  }
+  .divider {
+    width: 100%;
+    height: 0.08;
+    background-color: rgba(255, 215, 0, 0.3);
+  }
+  .match-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1.5;
+    padding-top: 0.5;
+    padding-bottom: 0.5;
+    padding-left: 1;
+    padding-right: 1;
+  }
+  .match-label {
+    font-size: 1.6;
+    color: #88ccff;
+  }
+  .match-opponent {
+    font-size: 1.8;
+    color: #ffffff;
+    font-weight: bold;
+  }
+  .match-status {
+    font-size: 1.4;
+    color: #888888;
+  }
+  .match-won {
+    font-size: 1.4;
+    color: #44ff88;
+    font-weight: bold;
+  }
+  .match-lost {
+    font-size: 1.4;
+    color: #ff4444;
+    font-weight: bold;
+  }
+  .current-match {
+    font-size: 2;
+    color: #ffd700;
+    font-weight: bold;
+  }
+  .btn {
+    padding-top: 1;
+    padding-bottom: 1;
+    padding-left: 3;
+    padding-right: 3;
+    background-color: rgba(255, 215, 0, 0.2);
+    border-color: #ffd700;
+    border-width: 0.1;
+    border-radius: 0.8;
+    cursor: pointer;
+  }
+  .btn-text {
+    font-size: 2;
+    color: #ffd700;
+    font-weight: bold;
+  }
+  .back-btn {
+    padding-top: 0.6;
+    padding-bottom: 0.6;
+    padding-left: 2;
+    padding-right: 2;
+    background-color: rgba(100, 100, 100, 0.2);
+    border-color: #666666;
+    border-width: 0.08;
+    border-radius: 0.6;
+    cursor: pointer;
+  }
+  .back-text {
+    font-size: 1.4;
+    color: #888888;
+  }
+</style>
+<div class="panel">
+  <span class="title">TOURNAMENT</span>
+  <span id="tournament-subtitle" class="subtitle">Defeat 3 opponents to become champion</span>
+  <div class="divider"></div>
+  <div class="match-row">
+    <span class="match-label">ROUND 1:</span>
+    <span id="t-opp-0" class="match-opponent">BYTE</span>
+    <span id="t-status-0" class="match-status">--</span>
+  </div>
+  <div class="match-row">
+    <span class="match-label">ROUND 2:</span>
+    <span id="t-opp-1" class="match-opponent">CIPHER</span>
+    <span id="t-status-1" class="match-status">--</span>
+  </div>
+  <div class="match-row">
+    <span class="match-label">FINAL:</span>
+    <span id="t-opp-2" class="match-opponent">NEXUS</span>
+    <span id="t-status-2" class="match-status">--</span>
+  </div>
+  <div class="divider"></div>
+  <span id="t-current" class="current-match">NEXT: vs BYTE</span>
+  <div id="btn-tournament-start" class="btn"><span class="btn-text">FIGHT!</span></div>
+  <div id="btn-tournament-back" class="back-btn"><span class="back-text">BACK</span></div>
+</div>

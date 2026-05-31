@@ -84,5 +84,11 @@
     <span id="theme-val" class="value">HOLODECK</span>
     <div id="btn-theme-next" class="btn-ctrl"><span class="ctrl-text">&gt;</span></div>
   </div>
+  <div class="row">
+    <span class="label">Ball:</span>
+    <div id="btn-ball-prev" class="btn-ctrl"><span class="ctrl-text">&lt;</span></div>
+    <span id="ball-val" class="value">NEON</span>
+    <div id="btn-ball-next" class="btn-ctrl"><span class="ctrl-text">&gt;</span></div>
+  </div>
   <div id="btn-back" class="back-btn"><span class="back-text">BACK</span></div>
 </div>
