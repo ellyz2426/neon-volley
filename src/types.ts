@@ -1,4 +1,4 @@
-export type GameState = 'title' | 'modeselect' | 'difficulty' | 'countdown' | 'playing' | 'paused' | 'gameover' | 'serving_ai' | 'leaderboard' | 'achievements' | 'settings' | 'help';
+export type GameState = 'title' | 'modeselect' | 'difficulty' | 'countdown' | 'playing' | 'paused' | 'gameover' | 'serving_ai' | 'leaderboard' | 'achievements' | 'settings' | 'help' | 'stats';
 
 export type GameMode = 'match' | 'quick' | 'rally' | 'serve' | 'spike' | 'daily';
 

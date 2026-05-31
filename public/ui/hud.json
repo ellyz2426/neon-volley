@@ -36,6 +36,16 @@
           "class": "combo"
         },
         "dataUid": "uid-4"
+      },
+      {
+        "sourceTag": "span",
+        "type": "custom",
+        "children": [],
+        "properties": {
+          "id": "time-display",
+          "class": "time"
+        },
+        "dataUid": "uid-5"
       }
     ],
     "properties": {
@@ -78,6 +88,12 @@
         "fontSize": "1.5",
         "color": "#ffaa00",
         "fontWeight": "bold"
+      }
+    },
+    "time": {
+      "content": {
+        "fontSize": "1",
+        "color": "#666688"
       }
     }
   },
@@ -122,44 +138,64 @@
         "column": 8
       }
     },
+    "time": {
+      "start": {
+        "line": 29,
+        "column": 2
+      },
+      "end": {
+        "line": 29,
+        "column": 7
+      }
+    },
     "uid-1": {
       "start": {
-        "line": 30,
+        "line": 34,
         "column": 0
       },
       "end": {
-        "line": 34,
+        "line": 39,
         "column": 6
       }
     },
     "uid-2": {
       "start": {
-        "line": 31,
+        "line": 35,
         "column": 2
       },
       "end": {
-        "line": 31,
+        "line": 35,
         "column": 53
       }
     },
     "uid-3": {
       "start": {
-        "line": 32,
+        "line": 36,
         "column": 2
       },
       "end": {
-        "line": 32,
+        "line": 36,
         "column": 50
       }
     },
     "uid-4": {
       "start": {
-        "line": 33,
+        "line": 37,
         "column": 2
       },
       "end": {
-        "line": 33,
+        "line": 37,
         "column": 48
+      }
+    },
+    "uid-5": {
+      "start": {
+        "line": 38,
+        "column": 2
+      },
+      "end": {
+        "line": 38,
+        "column": 46
       }
     }
   }

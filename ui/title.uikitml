@@ -38,6 +38,11 @@
     color: #00ffff;
     font-weight: bold;
   }
+  .btn-row {
+    display: flex;
+    flex-direction: row;
+    gap: 1.5;
+  }
   .btn-small {
     padding-top: 0.8;
     padding-bottom: 0.8;
@@ -58,7 +63,10 @@
   <span class="title-text">NEON VOLLEY</span>
   <span class="subtitle">Holodeck Beach Volleyball</span>
   <div id="btn-play" class="btn"><span class="btn-text">PLAY</span></div>
-  <div id="btn-leaderboard" class="btn-small"><span class="btn-small-text">LEADERBOARD</span></div>
+  <div class="btn-row">
+    <div id="btn-leaderboard" class="btn-small"><span class="btn-small-text">LEADERBOARD</span></div>
+    <div id="btn-stats" class="btn-small"><span class="btn-small-text">STATS</span></div>
+  </div>
   <div id="btn-achievements" class="btn-small"><span class="btn-small-text">ACHIEVEMENTS</span></div>
   <div id="btn-settings" class="btn-small"><span class="btn-small-text">SETTINGS</span></div>
   <div id="btn-help" class="btn-small"><span class="btn-small-text">HELP</span></div>

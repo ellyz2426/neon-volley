@@ -27,9 +27,14 @@
     color: #ffaa00;
     font-weight: bold;
   }
+  .time {
+    font-size: 1;
+    color: #666688;
+  }
 </style>
 <div class="hud">
   <span id="score-display" class="score">0 - 0</span>
   <span id="set-display" class="info">Set 1</span>
   <span id="combo-display" class="combo"></span>
+  <span id="time-display" class="time"></span>
 </div>

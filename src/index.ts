@@ -1481,7 +1481,16 @@ function updateBallVisuals() {
 }
 
 function updateBallTrail() {
-  if (!gsm.ballActive) return;
+  if (!gsm.ballActive) {
+    // Clear trail when ball stops
+    if (ballTrailMesh) {
+      world.scene.remove(ballTrailMesh);
+      ballTrailMesh.geometry.dispose();
+      ballTrailMesh = null;
+    }
+    ballTrailPoints = [];
+    return;
+  }
 
   ballTrailPoints.push(gsm.ballPos.clone());
   if (ballTrailPoints.length > 30) ballTrailPoints.shift();
@@ -1503,10 +1512,24 @@ function updateBallTrail() {
 
   const geo = new BufferGeometry();
   geo.setAttribute('position', new Float32BufferAttribute(pts, 3));
+
+  // Speed-reactive trail color
+  const speed = gsm.ballVel.length();
+  const theme = THEMES[gsm.theme];
+  let trailColor = theme.ballTrail;
+  let trailOpacity = 0.3;
+  if (speed > 10) {
+    trailColor = '#ff4400'; // Fast = hot
+    trailOpacity = 0.5;
+  } else if (speed > 6) {
+    trailColor = theme.highlight;
+    trailOpacity = 0.4;
+  }
+
   const mat = new LineBasicMaterial({
-    color: new Color('#00ffff'),
+    color: new Color(trailColor),
     transparent: true,
-    opacity: 0.3,
+    opacity: trailOpacity,
     blending: AdditiveBlending,
   });
   ballTrailMesh = new LineSegments(geo, mat);
@@ -1645,6 +1668,7 @@ async function setupUI() {
     { name: 'toast', config: '/ui/toast.json', maxW: 0.3, maxH: 0.08, pos: [0, 0, 0], type: 'follower' },
     { name: 'countdown', config: '/ui/countdown.json', maxW: 0.3, maxH: 0.15, pos: [0, 0, 0], type: 'follower' },
     { name: 'servebar', config: '/ui/servebar.json', maxW: 0.25, maxH: 0.08, pos: [0, 0, 0], type: 'follower' },
+    { name: 'stats', config: '/ui/stats.json', maxW: 0.85, maxH: 1.1, pos: [0, 1.8, -3], type: 'world' },
   ];
 
   for (const cfg of configs) {
@@ -1718,6 +1742,7 @@ function wireUIEvents() {
   wireBtn('title', 'btn-achievements', () => { hideUI('title'); updateAchievementsPanel(); showUI('achievements'); audio.playClick(); });
   wireBtn('title', 'btn-settings', () => { hideUI('title'); showUI('settings'); audio.playClick(); });
   wireBtn('title', 'btn-help', () => { hideUI('title'); showUI('help'); audio.playClick(); });
+  wireBtn('title', 'btn-stats', () => { hideUI('title'); updateStatsPanel(); showUI('stats'); audio.playClick(); });
 
   // Mode select
   const modes: [string, GameMode][] = [
@@ -1779,6 +1804,9 @@ function wireUIEvents() {
 
   // Help
   wireBtn('help', 'btn-back', () => { hideUI('help'); showUI('title'); audio.playClick(); });
+
+  // Stats
+  wireBtn('stats', 'btn-back', () => { hideUI('stats'); showUI('title'); audio.playClick(); });
 }
 
 function wireBtn(panel: string, btnId: string, handler: () => void) {
@@ -1863,6 +1891,9 @@ function updateHUD() {
     setText(doc, 'set-display', gsm.mode === 'match' ? `Set ${gsm.currentSet} | ${gsm.playerSets}-${gsm.opponentSets}` : gsm.mode.toUpperCase());
   }
   setText(doc, 'combo-display', gsm.combo > 1 ? `x${gsm.combo} COMBO` : '');
+  const mins = Math.floor(gsm.matchTime / 60);
+  const secs = Math.floor(gsm.matchTime % 60);
+  setText(doc, 'time-display', `${mins}:${String(secs).padStart(2, '0')}`);
 }
 
 function updateServeBar() {
@@ -1991,6 +2022,19 @@ function updateAchievementsPanel() {
     const unlocked = gsm.achievements.has(a.id);
     setText(doc, `ach-${i}`, `${unlocked ? '[x]' : '[ ]'} ${a.name} - ${a.desc}`);
   });
+}
+
+function updateStatsPanel() {
+  const doc = getDoc('stats');
+  if (!doc) return;
+  setText(doc, 'stat-games', `${gsm.gamesPlayed}`);
+  setText(doc, 'stat-wins', `${gsm.gamesWon}`);
+  setText(doc, 'stat-winrate', gsm.gamesPlayed > 0 ? `${Math.round((gsm.gamesWon / gsm.gamesPlayed) * 100)}%` : '0%');
+  setText(doc, 'stat-aces', `${gsm.totalAces}`);
+  setText(doc, 'stat-spikes', `${gsm.totalSpikes}`);
+  setText(doc, 'stat-blocks', `${gsm.totalBlocks}`);
+  setText(doc, 'stat-rally', `${gsm.bestRally}`);
+  setText(doc, 'stat-achcount', `${gsm.achievements.size}/${ACHIEVEMENTS.length}`);
 }
 
 // ============================================================
